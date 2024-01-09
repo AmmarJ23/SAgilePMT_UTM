@@ -71,6 +71,24 @@ class TaskController extends Controller
             ->with('statuses', $statuses);
     }
 
+    public function viewKanbanBoardAlt($proj_id) 
+    {
+        //the function will send the required data to the kanban board to display
+        //the kanban board will display all tasks that is related to specific project 
+
+        //get the task that is related to specific project
+        $tasks = Task::whereIn('proj_id', [$proj_id])->get();
+        $project = Project::where('id', $proj_id)->first();
+
+        //get the status that is related to the project
+        $statuses = Status::whereIn('project_id', [$proj_id])->get();
+
+        return view('kanban.kanban')
+            ->with('title', $project->proj_name)
+            ->with('tasks', $tasks)
+            ->with('statuses', $statuses);
+    }
+
 
     public function updateKanbanBoard(Request $request, $id) {
         $task = Task::find($id);
@@ -86,6 +104,18 @@ class TaskController extends Controller
       
         return response()->json(['message' => 'Task updated successfully']);
       }
+
+    public function getTaskDescription($task_id)
+    {
+        $task = Task::find($task_id);
+
+        if (!$task) {
+            // Task not found, handle accordingly
+            return response()->json(['message' => 'Task not found'], 404);
+        }
+
+        return response()->json(['description' => $task->description]);
+    }
       
 
     /**
@@ -143,7 +173,8 @@ class TaskController extends Controller
             'start_date' => 'required|date|after_or_equal:'.$sprint->start_sprint,
 
             //validate that end of task should be before or equal the sprint's end date
-            'end_date' => 'required|date|before_or_equal:'.$sprint->end_sprint.'|after_or_equal:start_date'
+            'end_date' => 'required|date|before_or_equal:'.$sprint->end_sprint.'|after_or_equal:start_date',
+
         ], [
             'title.required' => '*The Task Name is required',
             'title.unique' => '*There is already an existing task in the userstory with the same name',
@@ -152,7 +183,7 @@ class TaskController extends Controller
             'start_date.after_or_equal' => '*The Start Date must be equal to or after the sprint start date',
             'end_date.required' => '*The End Date is required',
             'end_date.before_or_equal' => '*The End Date must be equal to or before the sprint end date',
-            'end_date.after_or_equal' => '*The End Date must be equal to or after the Start Date'
+            'end_date.after_or_equal' => '*The End Date must be equal to or after the Start Date',
         ]);
 
         //assign request values to new task 
@@ -253,7 +284,9 @@ class TaskController extends Controller
             'start_date' => 'required|date|after_or_equal:'.$sprint->start_sprint,
 
             //validate that end of task should be before or equal the sprint's end date
-            'end_date' => 'required|date|before_or_equal:'.$sprint->end_sprint.'|after_or_equal:start_date'
+            'end_date' => 'required|date|before_or_equal:'.$sprint->end_sprint.'|after_or_equal:start_date',
+
+        
         ], [
             'title.required' => '*The Task Name is required',
             'title.unique' => '*There is already an existing task in the userstory with the same name',
@@ -262,7 +295,7 @@ class TaskController extends Controller
             'start_date.after_or_equal' => '*The Start Date must be equal to or after the sprint start date',
             'end_date.required' => '*The End Date is required',
             'end_date.before_or_equal' => '*The End Date must be equal to or before the sprint end date',
-            'end_date.after_or_equal' => '*The End Date must be equal to or after the Start Date'
+            'end_date.after_or_equal' => '*The End Date must be equal to or after the Start Date',
         ]);
 
         $task->title = $request->title;

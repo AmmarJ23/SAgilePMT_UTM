@@ -1,4 +1,4 @@
-<!--Kanban Board-->
+<!--tasks.kanban.blade.php-->
 @extends('layouts.app')
 @include('inc.style')
 

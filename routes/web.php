@@ -166,6 +166,7 @@ Route::get('backlog/{userstory}/destroy', 'UserStoryController@destroy')->name('
 //Kanban Board
 Route::get('sprint/task', 'TaskController@kanbanBoard')->name('tasks.kanban'); 
 Route::put('/tasks/{id}', 'TaskController@updateKanbanBoard');
+Route::get('/tasks/{task_id}/description', 'TaskController@getTaskDescription')->name('tasks.description');
 //Main Task Page 
 Route::get('task/{u_id}', 'TaskController@index')->name('tasks.index');
 Route::get('task/{userstory}/create', 'TaskController@create')->name('tasks.create');
@@ -259,6 +260,22 @@ Route::get('backlog/{userstory}/destroy', 'UserStoryController@destroy')->name('
 Route::get('sprint/task', 'TaskController@indexKanbanBoard')->name('tasks.kanban'); 
 Route::get('kanban/{proj_id}', 'TaskController@viewKanbanBoard')->name('tasks.viewkanban');
 Route::put('/tasks/{id}', 'TaskController@updateKanbanBoard');
+
+//Kanban Page
+Route::get('/{proj_id}/{sprint_id}/kanbanBoard', 'KanbanController@kanbanIndex')->name('sprint.kanbanPage');
+Route::post('/addStatus', 'KanbanController@createStatus')->name('kanban.createStatus');
+Route::put('/updateStatus', 'KanbanController@updateStatus')->name('kanban.updateStatus');
+Route::put('/updateTaskStatus', 'KanbanController@updateTaskStatus')->name('kanban.updateTaskStatus');
+Route::delete('/deleteStatus', 'KanbanController@deleteStatus')->name('kanban.deleteStatus');
+Route::post('/storeTask', 'KanbanController@storeTask')->name('kanban.storeTask');
+Route::post('/createTask', 'KanbanController@createTask')->name('kanban.createTask');
+Route::delete('/deleteTask', 'KanbanController@deleteTask')->name('kanban.deleteTask');
+Route::get('/updateTask/{taskId}', 'KanbanController@updateTaskPage')->name('kanban.updateTaskPage');
+Route::post('/updateTaskStore/{taskId}', 'KanbanController@updateTask')->name('kanban.updateTask');
+
+
+
+
 //Main Task Page 
 Route::get('task/{u_id}', 'TaskController@index')->name('tasks.index');
 Route::get('task/{userstory}/create', 'TaskController@create')->name('tasks.create');
@@ -311,9 +328,6 @@ Route::get('/cost/{id}/edit', 'App\Http\Controllers\QuotationController@edit')->
 Route::get('/search', 'App\Http\Controllers\QuotationController@search_company')->name('search_quotation');
 
 
-
-
-
-
-
-
+//route for burn down chart
+Route::get('/{proj_id}/{sprint_id}/burn-down-chart', 'BurnDownChartController@index')->name('burnDown.index');
+// Route::get('/{sprint_id}/burn-down-chart', 'BurnDownChartController@index')->name('burnDown.index');

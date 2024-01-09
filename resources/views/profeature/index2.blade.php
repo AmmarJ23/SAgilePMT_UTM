@@ -19,6 +19,8 @@
       <th>Description</th>
       <th>Start Date</th>
       <th>End Date</th>
+      <th>Kanban</th>
+      <th>Burn Down Chart</th>
       <th>Edit</th>
       <th>Delete</th>
       <th>User Story</th>
@@ -42,6 +44,16 @@
 
       <th>
         {{ date('d F Y', strtotime($sprint->end_sprint)) }}
+      </th>
+
+      <th>
+        <button type="submit"><a href="{{ route('sprint.kanbanPage', ['proj_id' => $projects->id, 'sprint_id' => $sprint->sprint_id]) }}" class="button">View</a></button>
+
+      </th>
+
+      <th>
+      <button type="submit"><a href="{{ route('burnDown.index', ['proj_id' => $projects->id, 'sprint_id' => $sprint->sprint_id]) }}" class="button">View</a></button>
+
       </th>
 
       <th>
