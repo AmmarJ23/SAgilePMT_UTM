@@ -4,53 +4,72 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Bugtracking;
+use App\User;
+use App\Mail\BugAssignedNotification;
+use Illuminate\Support\Facades\Mail;
 
 class BugtrackingController extends Controller
 {
 
     public function index()
-    {
-        // Fetch all bugtrackings from the database
-        $bugtracks = Bugtracking::all();
+{
+    // Fetch all bugtrackings from the database
+    $bugtracks = Bugtracking::all();
 
-        // Get unique statuses from bugtrackings
-        $statuses = $bugtracks->unique('status')->pluck('status');
+    // Get unique statuses from bugtrackings
+    $statuses = $bugtracks->unique('status')->pluck('status');
 
-        // Return the view with bugtracks data and statuses
-        return view('bugtrack.index', compact('bugtracks', 'statuses'));
+    // Return the view with bugtracks data, statuses, and users
+    return view('bugtrack.index', compact('bugtracks', 'statuses'));
+}
+
+
+public function create()
+{
+    // Fetch all users from the database
+    $users = User::all();
+
+    // Get the authenticated user
+    $authUser = auth()->user();
+
+    // Return the view with users data and authenticated user
+    return view('bugtrack.create', compact('users', 'authUser'));
+}
+
+
+public function store(Request $request)
+{
+    // Validate the request
+    $validatedData = $request->validate([
+        'title' => 'required|string|max:255',
+        'description' => 'required|string',
+        'severity' => 'string|max:255',
+        'status' => 'string|max:255',
+        'flow' => 'nullable|string',
+        'expected_results' => 'nullable|string',
+        'actual_results' => 'nullable|string',
+        'attachment' => 'nullable|string',
+        'assigned_to' => 'nullable|integer',
+    ]);
+
+    // Set the reported_by field to the authenticated user's ID
+    $validatedData['reported_by'] = auth()->user()->id;
+
+    // Create new Bugtrack instance
+    $bugtrack = Bugtracking::create($validatedData);
+
+    // Send email notification to the assigned user
+    if ($bugtrack->assigned_to) {
+        $assignedUser = User::find($bugtrack->assigned_to);
+        if ($assignedUser) {
+            Mail::to($assignedUser->email)->send(new BugAssignedNotification($bugtrack));
+        }
     }
 
-    public function create()
-    {
-        return view('bugtrack.create');
-    }
+    // Redirect after successful creation
+    return redirect()->route('bugtrack.index')->with('success', 'Bug created successfully');
+}
 
-    public function store(Request $request)
-    {
-        // Validate the request
-        $validatedData = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'severity' => 'string|max:255',
-            'status' => 'string|max:255',
-            'flow' => 'nullable|string',
-            'expected_results' => 'nullable|string',
-            'actual_results' => 'nullable|string',
-            'attachment' => 'nullable|string',
-            'assigned_to' => 'nullable',
-            'reported_by' => 'nullable',
-        ]);
-    
-        // Set default values for assigned_to and reported_by if not provided
-        $validatedData['assigned_to'] = $validatedData['assigned_to'] ?? 1; // Change 1 to the default user ID
-        $validatedData['reported_by'] = $validatedData['reported_by'] ?? 1; // Change 1 to the default user ID
-    
-        // Create new Bugtrack instance
-        $bugtrack = Bugtracking::create($validatedData);
-    
-        // Redirect after successful creation
-        return redirect()->route('bugtrack.index')->with('success', 'Bug created successfully');
-    }
 
     public function updateStatus(Request $request, $bugId)
     {

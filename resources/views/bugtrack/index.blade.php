@@ -29,21 +29,23 @@
                 <div class="card mb-4 rounded-lg shadow-md">
                     <div class="card-body">
                         <h2 class="text-2xl font-semibold mb-4">Open</h2>
-                        @forelse($bugtracks as $bugtrack)
-                            @if($bugtrack->status === 'open')
-                                <div class="bugtrack-card card mb-4 rounded-lg shadow-md">
-                                    <div class="card-body">
-                                        <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
-                                        <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                        <div class="flex items-center text-gray-600 text-sm mt-2">
-                                            <!-- Additional information -->
+                        <div class="droppable" data-status="open">
+                            @forelse($bugtracks as $bugtrack)
+                                @if($bugtrack->status === 'open')
+                                    <div class="bugtrack-card card mb-4 rounded-lg shadow-md draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                        <div class="card-body">
+                                            <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
+                                            <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                            <div class="flex items-center text-gray-600 text-sm mt-2">
+                                                <!-- Additional information -->
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                        @empty
-                            <p>No bugtrackings found with status "Open".</p>
-                        @endforelse
+                                @endif
+                            @empty
+                                <p>No bugtrackings found with status "Open".</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -53,21 +55,23 @@
                 <div class="card mb-4 rounded-lg shadow-md">
                     <div class="card-body">
                         <h2 class="text-2xl font-semibold mb-4">In Progress</h2>
-                        @forelse($bugtracks as $bugtrack)
-                            @if($bugtrack->status === 'In Progress')
-                                <div class="bugtrack-card card mb-4 rounded-lg shadow-md">
-                                    <div class="card-body">
-                                        <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
-                                        <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                        <div class="flex items-center text-gray-600 text-sm mt-2">
-                                            <!-- Additional information -->
+                        <div class="droppable" data-status="In Progress">
+                            @forelse($bugtracks as $bugtrack)
+                                @if($bugtrack->status === 'In Progress')
+                                    <div class="bugtrack-card card mb-4 rounded-lg shadow-md draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                        <div class="card-body">
+                                            <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
+                                            <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                            <div class="flex items-center text-gray-600 text-sm mt-2">
+                                                <!-- Additional information -->
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                        @empty
-                            <p>No bugtrackings found with status "In Progress".</p>
-                        @endforelse
+                                @endif
+                            @empty
+                                <p>No bugtrackings found with status "In Progress".</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -77,21 +81,23 @@
                 <div class="card mb-4 rounded-lg shadow-md">
                     <div class="card-body">
                         <h2 class="text-2xl font-semibold mb-4">Closed</h2>
-                        @forelse($bugtracks as $bugtrack)
-                            @if($bugtrack->status === 'Closed')
-                                <div class="bugtrack-card card mb-4 rounded-lg shadow-md">
-                                    <div class="card-body">
-                                        <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
-                                        <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                        <div class="flex items-center text-gray-600 text-sm mt-2">
-                                            <!-- Additional information -->
+                        <div class="droppable" data-status="Closed">
+                            @forelse($bugtracks as $bugtrack)
+                                @if($bugtrack->status === 'Closed')
+                                    <div class="bugtrack-card card mb-4 rounded-lg shadow-md draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                        <div class="card-body">
+                                            <h3 class="text-xl font-semibold">{{ $bugtrack->title }}</h3>
+                                            <p class="text-gray-700 text-lg mt-2">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                            <div class="flex items-center text-gray-600 text-sm mt-2">
+                                                <!-- Additional information -->
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endif
-                        @empty
-                            <p>No bugtrackings found with status "Closed".</p>
-                        @endforelse
+                                @endif
+                            @empty
+                                <p>No bugtrackings found with status "Closed".</p>
+                            @endforelse
+                        </div>
                     </div>
                 </div>
             </div>
@@ -141,20 +147,17 @@
                         console.error('Error:', error);
                     });
             });
+
+            card.addEventListener('dragstart', () => {
+                card.classList.add('dragging');
+            });
+
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+            });
         });
 
-        const draggables = document.querySelectorAll('.draggable');
         const droppables = document.querySelectorAll('.droppable');
-
-        draggables.forEach(draggable => {
-            draggable.addEventListener('dragstart', () => {
-                draggable.classList.add('dragging');
-            });
-
-            draggable.addEventListener('dragend', () => {
-                draggable.classList.remove('dragging');
-            });
-        });
 
         droppables.forEach(droppable => {
             droppable.addEventListener('dragover', e => {
@@ -242,5 +245,19 @@
         flex: 1 1 auto;
         min-height: 1px;
         padding: 1.5rem;
+    }
+
+    /* Dragging Effect */
+    .draggable.dragging {
+        opacity: 0.5;
+    }
+
+    /* Droppable Area */
+    .droppable {
+        min-height: 100px; /* Adjust as needed */
+        border: 2px dashed #ccc;
+        margin-bottom: 10px;
+        padding: 10px;
+        background-color: #f9f9f9;
     }
 </style>
