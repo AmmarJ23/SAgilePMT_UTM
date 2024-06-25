@@ -111,38 +111,84 @@
   </div>
   <!--/ Transactions -->
 
-  <!-- Weekly Overview Chart -->
-  <div class="col-xl-4 col-md-6">
-    <div class="card">
-      <div class="card-header">
-        <div class="d-flex justify-content-between">
-          <h5 class="mb-1">Burndown Chart</h5>
-          <div class="dropdown">
-            <button class="btn p-0" type="button" id="weeklyOverviewDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="mdi mdi-dots-vertical mdi-24px"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="weeklyOverviewDropdown">
-              <a class="dropdown-item" href="javascript:void(0);">Refresh</a>
-              <a class="dropdown-item" href="javascript:void(0);">Share</a>
-              <a class="dropdown-item" href="javascript:void(0);">Update</a>
+  <div class="row gy-4">
+    <!-- Event Count Over Time Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Calendar Events</h5>
             </div>
-          </div>
+            <div class="card-body">
+                <div id="eventChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var eventOptions = {
+                            chart: {
+                                type: 'bar', // Changed to bar type
+                                height: 350,
+                                zoom: {
+                                    enabled: false
+                                }
+                            },
+                            series: [{
+                                name: 'Event Count',
+                                data: @json(array_values($countsPerMonth))
+                            }],
+                            xaxis: {
+                                categories: @json(array_keys($countsPerMonth)),
+                                labels: {
+                                    rotate: -45,
+                                    formatter: function (value) {
+                                        return value.split(' ')[0]; // Display only the month part
+                                    }
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Total Events'
+                                },
+                                tickAmount: 5,
+                                ticks: [1, 2, 3, 4, 5]
+                            },
+                        };
+
+                        var eventChart = new ApexCharts(document.querySelector("#eventChart"), eventOptions);
+                        eventChart.render();
+                    });
+                </script>
+            </div>
         </div>
-      </div>
-      <div class="card-body">
-        <div id="weeklyOverviewChart"></div>
-        <div class="mt-1 mt-md-3">
-          <div class="d-flex align-items-center gap-3">
-            <p class="mb-0">Your activity has increased by 45% better compared to last month</p>
-          </div>
-          <div class="d-grid mt-3 mt-md-4">
-            <button class="btn btn-primary" type="button" style="background-color: #3f58b0;">Details</button>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
-  <!--/ Weekly Overview Chart -->
+
+    <!-- Bug Status Distribution Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Bug Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="bugStatusChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var options = {
+                            chart: {
+                                type: 'pie',
+                                height: 350
+                            },
+                            series: @json($bugChartData['series']),
+                            labels: @json($bugChartData['labels']),
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#bugStatusChart"), options);
+                        chart.render();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!--/ Bug Status Distribution Chart -->
 
   <!-- Total Earnings -->
   <div class="col-xl-4 col-md-6">

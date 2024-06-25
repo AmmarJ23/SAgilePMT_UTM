@@ -70,11 +70,16 @@
         <div class="flex mb-6">
             <div class="w-1/2 pr-4">
                 <label for="assigned_to" class="block text-gray-700 text-lg font-semibold mb-2">Assigned To</label>
-                <input type="text" id="assigned_to" name="assigned_to" class="form-input" placeholder="Enter assigned to">
+                <select id="assigned_to" name="assigned_to" class="form-select" required>
+                    @foreach($users as $user)
+                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
+                </select>
             </div>
             <div class="w-1/2 pl-4">
                 <label for="reported_by" class="block text-gray-700 text-lg font-semibold mb-2">Reported By</label>
-                <input type="text" id="reported_by" name="reported_by" class="form-input" placeholder="Enter reported by">
+                <input type="text" id="reported_by" name="reported_by" class="form-input" value="{{ $authUser->name }}" disabled>
+                <input type="hidden" name="reported_by" value="{{ $authUser->name }}">
             </div>
         </div>
         <!-- Submit Button -->
