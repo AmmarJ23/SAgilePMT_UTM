@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use App\Calendar;
 
 class HomeController extends Controller
 {
@@ -24,12 +26,62 @@ class HomeController extends Controller
      */
     public function index()
     {
-        //get the project where user's team name(s) is the same with project's team name
-        $user = \Auth::user();
-        $teammapping = \App\TeamMapping::where('username', '=', $user->username)->pluck('team_name')->toArray(); // use pluck() to retrieve an array of team names
-        $pros = \App\Project::whereIn('team_name', $teammapping)->get(); // use whereIn() to retrieve the projects that have a team_name value in the array
+        // Get the user
+        $user = Auth::user();
+
+        // Get the user's team names
+        $teammapping = \App\TeamMapping::where('username', '=', $user->username)->pluck('team_name')->toArray();
+
+        // Get the projects associated with the user's team names
+        $pros = \App\Project::whereIn('team_name', $teammapping)->get();
+
+
+        // Fetch events from the calendar database
+        $events = Calendar::all();
+
+        // Prepare an array of all months in the current year
+        $allMonths = [];
+        $startMonth = Carbon::now()->startOfYear(); // Start from January of the current year
+        $endMonth = Carbon::now()->endOfYear();     // End at December of the current year
+
+        // Loop through each month of the current year and format it as "M Y"
+        while ($startMonth <= $endMonth) {
+            $allMonths[] = $startMonth->format('M Y');
+            $startMonth->addMonth(); // Move to the next month
+        }
+
+        // Group events by month-year and count occurrences
+        $eventCounts = $events->groupBy(function ($event) {
+            return Carbon::parse($event->start_date)->format('M Y');
+        })->map(function ($group) {
+            return $group->count();
+        });
+
+        // Initialize counts for all months with 0
+        $countsPerMonth = array_fill_keys($allMonths, 0);
+
+        // Merge actual counts with initialized array
+        $countsPerMonth = array_merge($countsPerMonth, $eventCounts->toArray());
+
+        
+        // Get the bug tracking information and sort by status
+        $bugTrackingData = \App\Bugtracking::select('status')
+            ->selectRaw('COUNT(*) as count')
+            ->groupBy('status')
+            ->get();
+
+        // Prepare the data for the pie chart
+        $bugChartData = [
+            'labels' => $bugTrackingData->pluck('status')->toArray(),
+            'series' => $bugTrackingData->pluck('count')->toArray()
+        ];
+
+        // dd($countsPerMonth);
 
         return view('home')
-            ->with('pros', $pros);
+            ->with('pros', $pros)
+            ->with('countsPerMonth', $countsPerMonth)
+            ->with('bugChartData', $bugChartData);
+
     }
 }
