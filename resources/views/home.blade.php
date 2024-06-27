@@ -1,5 +1,5 @@
 <!--Home Page after Login-->
-@extends('layouts.app2')
+@extends('layouts.app3')
 
 @include('inc.dashboard')
 @include('inc.navbar')

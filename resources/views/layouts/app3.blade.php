@@ -110,6 +110,86 @@
     </div>
   </div>
   <!--/ Transactions -->
+
+  <div class="row gy-4">
+    <!-- Event Count Over Time Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Calendar Events</h5>
+            </div>
+            <div class="card-body">
+                <div id="eventChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var eventOptions = {
+                            chart: {
+                                type: 'bar', // Changed to bar type
+                                height: 350,
+                                zoom: {
+                                    enabled: false
+                                }
+                            },
+                            series: [{
+                                name: 'Event Count',
+                                data: @json(array_values($countsPerMonth))
+                            }],
+                            xaxis: {
+                                categories: @json(array_keys($countsPerMonth)),
+                                labels: {
+                                    rotate: -45,
+                                    formatter: function (value) {
+                                        return value.split(' ')[0]; // Display only the month part
+                                    }
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Total Events'
+                                },
+                                tickAmount: 5,
+                                ticks: [1, 2, 3, 4, 5]
+                            },
+                        };
+
+                        var eventChart = new ApexCharts(document.querySelector("#eventChart"), eventOptions);
+                        eventChart.render();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bug Status Distribution Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Bug Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="bugStatusChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var options = {
+                            chart: {
+                                type: 'pie',
+                                height: 350
+                            },
+                            series: @json($bugChartData['series']),
+                            labels: @json($bugChartData['labels']),
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#bugStatusChart"), options);
+                        chart.render();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+  <!--/ Bug Status Distribution Chart -->
+
   <!-- Total Earnings -->
   <div class="col-xl-4 col-md-6">
     <div class="card">
