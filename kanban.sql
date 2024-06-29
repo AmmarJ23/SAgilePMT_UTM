@@ -685,6 +685,68 @@ INSERT INTO `users` (`id`, `name`, `username`, `country`, `email`, `email_verifi
 (3, 'periyaa', 'periyaa1', 'Afghanistan', 'periyaa@gmail.com', NULL, '$2y$10$Pl7aHWuNzGtr430UBDvAu.rqe3xDCrulTDWUUoluc7nG.GLS9o4Cu', NULL, '2023-11-05 22:14:09', '2023-11-05 22:14:09'),
 (4, 'Ammar', 'ammar-', 'Malaysia', 'ammar-@graduate.utm.my', NULL, '$2y$10$mFZFJ7SPGl1DADnzxu8uiuU4CMwnrUZDX7yslyVRmRiCd0BSJKxGW', 'F1bHKh46emrNjo1S4emgD4a9Ti3hMbxVtWZV2hU4yhA4NVtTUO2OcwwwLVnL', '2023-12-12 08:16:33', '2023-12-12 08:16:33');
 
+
+
+
+
+-- Table structure for table `permission_role`
+--
+
+CREATE TABLE `permission_role` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `permission_id` bigint(191) NOT NULL,
+  `role_id` bigint(191) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(191) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table structure for table `user_role`
+--
+
+CREATE TABLE `user_role` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `role_id` int(10) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `permission_role`
+--
+
+INSERT INTO `permission_role` (`id`, `permission_id`, `role_id`) VALUES
+(1, '01', '01'),
+(2, '02', '02'),
+(3, '03', '03');
+
+
+--
+-- Dumping data for table `permissions`
+--
+
+INSERT INTO `permissions` (`id`, `name`) VALUES
+(1, 'jeevan'),
+(2, 'periyaa1'),
+(3, 'ammar-');
+
+--
+-- Dumping data for table `user_role`
+--
+
+INSERT INTO `user_role` (`id`, `user_id`, `role_id`) VALUES
+(1, '10', '03'),
+(2, '05', '02'),
+(3, '08', '01');
+
+
 -- --------------------------------------------------------
 
 --

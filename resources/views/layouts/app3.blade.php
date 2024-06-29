@@ -302,12 +302,16 @@
             </div>
           </div>
           <div class="card-body mt-mg-1">
-            <h6 class="mb-2">So far</h6>
+            <h6 class="mb-2">Teams that you currently joined</h6>
             <div class="d-flex flex-wrap align-items-center mb-2 pb-1">
-              <h4 class="mb-0 me-2">Looking Fine!</h4>
+
+            <div class="d-grid mt-1 mt-md-2">
+                <a class="btn btn-primary" href="{{ url('/team') }}" style="background-color: #3f58b0;">Teams</a>
             </div>
+            </div>
+
             {{--<small>Weekly Project</small>--}}
-          </div>
+        </div>
         </div>
       </div>
       <!--/ Total Profit Weekly Project -->

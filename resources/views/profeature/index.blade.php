@@ -36,7 +36,7 @@
         @else
             <!-- Loop through existing projects -->
             @foreach($pros as $project)
-    <tr> 
+    <tr>
         <!-- Display project details -->
         <td>{{ $project->proj_name }}</td>
         <td>{{ $project->proj_desc }}</td>
@@ -65,8 +65,13 @@
 
         @endif
     </table>
+    <h3 class="text-danger mt-4"> Warning </h3>
+    <p class="text-danger mt-4">DO NOT CREATE THE PROJECT FOR ANYONE ELSE AND ONLY PICK THE ONE THAT YOU HAVE BEEN ASSIGNED!</p>
+    <h6> Please create the project only for you and your assigned team as you have logged into the system. Otherwise, the table cannot be updated normally.</h6>
+    <p>For example, if your name is Abu and your assigned team is Team1, you can create project but be sure to click on your team, Team1.</p>
     <br><br><br>
 
     <!-- Button to create a new project -->
     <button type="submit"><a href="{{ route('projects.create') }}">Add Project</a></button>
 @endsection
+

@@ -1,217 +1,255 @@
 {
-  "menu": [
-    {
-      "url": "#",
-      "name": "Dashboard",
-      "icon": "",
-      "slug": "dashboard",
-      "badge": [
-        "",
-        ""
-      ],
-      "submenu": [
-        {
-          "url": "/home",
-          "name": "Dashboard",
-          "slug": "dashboard",
-          "target": "_blank",
+    "menu": [
+      {
+        "url": "#",
+        "name": "Dashboard",
+        "icon": "",
+        "slug": "dashboard",
+        "badge": [
+          "",
+          ""
+        ],
+        "submenu": [
+          {
+            "url": "/home",
+            "name": "Dashboard",
+            "slug": "dashboard",
+            "badge": [
+              "label-secondaryr fs-tiny",
+              ""
+            ]
+          },
+          {
+            "url": "/",
+            "name": "Analytics",
+            "slug": "dashboard-analytics"
+          }
+        ]
+      },
+      {
+        "name": "Layouts",
+        "icon": "menu-icon tf-icons mdi mdi-window-maximize",
+        "slug": "layouts",
+        "submenu": [
+          {
+            "url": "layouts/without-menu",
+            "name": "Without menu",
+            "slug": "layouts-without-menu"
+          },
+          {
+            "url": "layouts/without-navbar",
+            "name": "Without navbar",
+            "slug": "layouts-without-navbar"
+          },
+          {
+            "url": "layouts/container",
+            "name": "Container",
+            "slug": "layouts-container"
+          },
+          {
+            "url": "layouts/fluid",
+            "name": "Fluid",
+            "slug": "layouts-fluid"
+          },
+          {
+            "url": "layouts/blank",
+            "name": "Blank",
+            "slug": "layouts-blank",
+            "target": "_blank"
+          }
+        ]
+      },
+
+      {
+        "name": "Coding Standard",
+        "icon": "menu-icon tf-icons mdi mdi-language-php",
+        "slug": "laravel-example",
+        "badge": [
+          "",
+          ""
+        ],
+        "submenu": [
+          {
+            "url": "/codestand",
+            "name": "User Management",
+            "slug": "laravel-example-user-management"
+          }
+        ]
+      },
+      {
+        "menuHeader": "Security & email"
+      },
+      {
+        "url": "/sendmail",
+        "name": "Email",
+        "icon": "menu-icon tf-icons mdi mdi-email-outline",
+        "slug": "app-email",
+        "target": "_blank",
+        "badge": [
+          "label-secondary fs-tiny",
+          ""
+        ]
+      },
+      {
+        "name": "Account Settings",
+        "icon": "menu-icon tf-icons mdi mdi-account-outline",
+        "slug": "pages-account-settings",
+        "submenu": [
+          {
+              "url": "pages/access-control-list",
+              "name": "Access Control List",
+              "slug": "access-control-list"
+          },
+          {
+            "url": "pages/account-settings-account",
+            "name": "Account",
+            "slug": "pages-account-settings-account"
+          },
+          {
+            "url": "pages/account-settings-notifications",
+            "name": "Notifications",
+            "slug": "pages-account-settings-notifications"
+          },
+          {
+            "url": "pages/account-settings-connections",
+            "name": "Connections",
+            "slug": "pages-account-settings-connections"
+          }
+        ]
+      },
+      {
+        "name": "Security Features",
+        "icon": "menu-icon tf-icons mdi mdi-lock-open-outline",
+        "slug": "auth",
+        "submenu": [
+          {
+            "url": "auth/login-basic",
+            "name": "Login",
+            "slug": "auth-login-basic",
+            "target": "_blank"
+          },
+          {
+            "url": "auth/register-basic",
+            "name": "Register",
+            "slug": "auth-register-basic",
+            "target": "_blank"
+          },
+          {
+            "url": "auth/forgot-password-basic",
+            "name": "Forgot Password",
+            "slug": "auth-forgot-password-basic",
+            "target": "_blank"
+          }
+        ]
+      },
+      {
+          "url": "/perfeatures",
+          "icon": "menu-icon tf-icons mdi mdi-grid",
+          "name": "Performance Feature",
+          "slug": "tables-datatables",
           "badge": [
-            "label-secondaryr fs-tiny",
+            "",
+            ""
+          ]
+      },
+      {
+        "menuHeader": "Components"
+      },
+      {
+          "name": "Projects",
+          "slug": "forms",
+          "submenu": [
+
+            {
+              "url": "/profeature",
+              "name": "Project List",
+              "slug": "project-list"
+            },
+            {
+              "url": "/status",
+              "name": "Project Status",
+              "slug": "form-validation",
+              "badge": [
+                "",
+                ""
+              ]
+            }
+          ]
+      },
+      {
+          "url": "/team",
+          "name": "Team",
+          "icon": "menu-icon tf-icons mdi mdi-account-network",
+          "slug": "app-chat",
+          "badge": [
+            "label-primary fs-tiny",
+            ""
+          ]
+      },
+      {
+          "url": "/forum",
+          "name": "Forum",
+          "icon": "menu-icon tf-icons mdi mdi-message-outline",
+          "slug": "app-chat",
+          "badge": [
+            "label-primary fs-tiny",
+            ""
+          ]
+      },
+        {
+          "url": "/calendar/index",
+          "name": "Calendar",
+          "icon": "menu-icon tf-icons mdi mdi-calendar-blank-outline",
+          "slug": "app-calendar",
+          "badge": [
+            "label-secondary fs-tiny",
             ""
           ]
         },
         {
-          "url": "/",
-          "name": "Analytics",
-          "slug": "dashboard-analytics"
-        }
-      ]
-    },
-    {
-      "name": "Layouts",
-      "icon": "menu-icon tf-icons mdi mdi-window-maximize",
-      "slug": "layouts",
-      "submenu": [
-        {
-          "url": "layouts/without-menu",
-          "name": "Without menu",
-          "slug": "layouts-without-menu"
+          "url": "/kanbanPage",
+          "name": "Kanban",
+          "icon": "menu-icon tf-icons mdi mdi-view-grid-outline",
+          "slug": "app-kanban",
+          "target": "_blank",
+          "badge": [
+            "label-secondary fs-tiny",
+            ""
+          ]
         },
-        {
-          "url": "layouts/blank",
-          "name": "Blank",
-          "slug": "layouts-blank",
-          "target": "_blank"
-        }
-      ]
-    },
 
-    {
-      "name": "Coding Standard",
-      "icon": "menu-icon tf-icons mdi mdi-language-php",
-      "slug": "laravel-example",
-      "badge": [
-        "",
-        ""
-      ],
-      "submenu": [
-        {
-          "url": "/codestand",
-          "name": "User Management",
-          "slug": "laravel-example-user-management",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-      "menuHeader": "Apps & Pages"
-    },
-    {
-      "url": "/email",
-      "name": "Email",
-      "icon": "menu-icon tf-icons mdi mdi-email-outline",
-      "slug": "app-email",
-      "target": "_blank",
-      "badge": [
-        "label-secondary fs-tiny",
-        ""
-      ]
-    },
-    {
-      "name": "Account Settings",
-      "icon": "menu-icon tf-icons mdi mdi-account-outline",
-      "slug": "pages-account-settings",
-      "submenu": [
-        {
-          "url": "pages/account-settings-account",
-          "name": "Account",
-          "slug": "pages-account-settings-account"
-        },
-        {
-          "url": "pages/account-settings-notifications",
-          "name": "Notifications",
-          "slug": "pages-account-settings-notifications"
-        },
-        {
-          "url": "pages/account-settings-connections",
-          "name": "Connections",
-          "slug": "pages-account-settings-connections"
-        }
-      ]
-    },
-    {
-      "name": "Security Features",
-      "icon": "menu-icon tf-icons mdi mdi-lock-open-outline",
-      "slug": "auth",
-      "submenu": [
-        {
-          "url": "auth/login-basic",
-          "name": "Login",
-          "slug": "auth-login-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/register-basic",
-          "name": "Register",
-          "slug": "auth-register-basic",
-          "target": "_blank"
-        },
-        {
-          "url": "auth/forgot-password-basic",
-          "name": "Forgot Password",
-          "slug": "auth-forgot-password-basic",
-          "target": "_blank"
-        }
-      ]
-    },
-    {
-        "url": "/perfeature",
-        "icon": "menu-icon tf-icons mdi mdi-grid",
-        "name": "Performance Feature",
-        "slug": "tables-datatables",
-        "target": "_blank",
+      {
+        "menuHeader": "Forms & Tables"
+      },
+      {
+        "url": "/status",
+        "icon": "menu-icon tf-icons mdi mdi-checkbox-marked-circle-outline",
+        "name": "Project Status",
+        "slug": "form-validation",
         "badge": [
           "",
           ""
         ]
-    },
-    {
-      "menuHeader": "Components"
-    },
-    {
-        "name": "Projects",
-        "slug": "forms",
-        "submenu": [
-
-        ]
-    },
-    {
-        "url": "/forum",
-        "name": "Forum",
-        "icon": "menu-icon tf-icons mdi mdi-message-outline",
-        "slug": "app-chat",
-        "target": "_blank",
-        "badge": [
-          "label-primary fs-tiny",
-          ""
-        ]
       },
+
       {
-        "url": "/calendar",
-        "name": "Calendar",
-        "icon": "menu-icon tf-icons mdi mdi-calendar-blank-outline",
-        "slug": "app-calendar",
-        "target": "_blank",
-        "badge": [
-          "label-secondary fs-tiny",
-          ""
-        ]
-      },
-      {
-        "url": "/kanban",
-        "name": "Kanban",
-        "icon": "menu-icon tf-icons mdi mdi-view-grid-outline",
-        "slug": "app-kanban",
-        "target": "_blank",
-        "badge": [
-          "label-secondary fs-tiny",
-          ""
-        ]
-      },
-
-    {
-      "menuHeader": "Forms & Tables"
-    },
-    {
-      "url": "/status",
-      "icon": "menu-icon tf-icons mdi mdi-checkbox-marked-circle-outline",
-      "name": "Project Status",
-      "slug": "form-validation",
-      "target": "_blank",
-      "badge": [
-        "",
-        ""
-      ]
-    },
-
-    {
-        "name": "Misc",
-        "icon": "menu-icon tf-icons mdi mdi-cube-outline",
-        "slug": "pages-misc",
-        "submenu": [
-          {
-            "url": "pages/misc-error",
-            "name": "Error",
-            "slug": "pages-misc-error",
-            "target": "_blank"
-          },
-          {
-            "url": "pages/misc-under-maintenance",
-            "name": "Under Maintenance",
-            "slug": "pages-misc-under-maintenance",
-            "target": "_blank"
-          }
-        ]
-      }
-  ]
-}
+          "name": "Misc",
+          "icon": "menu-icon tf-icons mdi mdi-cube-outline",
+          "slug": "pages-misc",
+          "submenu": [
+            {
+              "url": "pages/misc-error",
+              "name": "Error",
+              "slug": "pages-misc-error",
+              "target": "_blank"
+            },
+            {
+              "url": "pages/misc-under-maintenance",
+              "name": "Under Maintenance",
+              "slug": "pages-misc-under-maintenance",
+              "target": "_blank"
+            }
+          ]
+        }
+    ]
+  }

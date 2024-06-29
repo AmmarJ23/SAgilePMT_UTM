@@ -9,7 +9,7 @@ class Project extends Model
     protected $fillable = ['user_id','team_name', 'proj_name','proj_desc','start_date','end_date'];
 
     //public $foreignKey = 'user_id';
-     
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -50,8 +50,19 @@ class Project extends Model
     }
 
     public function statuses()
-    {   
+    {
         return $this->hasMany(Status::class)->orderBy('order');
+    }
+
+    public function users()
+    {
+        // return $this->belongsToMany(User::class)->withPivot('attachment_access', 'project_access', 'sprint_access', 'userstory_access', 'forum_access', 'secfeature_access');
+        return $this->belongsToMany(User::class)->withPivot('attachment_access', 'project_access');
+    }
+
+    public function userAccess()
+    {
+        return $this->hasMany(UserAccess::class);
     }
 }
 

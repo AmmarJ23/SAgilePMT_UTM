@@ -6,10 +6,12 @@ use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
+use App\Http\Controllers\TeamMappingController;
 use App\Http\Controllers\layouts\WithoutNavbar;
 use App\Http\Controllers\layouts\Fluid;
 use App\Http\Controllers\layouts\Container;
 use App\Http\Controllers\layouts\Blank;
+use App\Http\Controllers\pages\AccessControlList;
 use App\Http\Controllers\pages\AccountSettingsAccount;
 use App\Http\Controllers\pages\AccountSettingsNotifications;
 use App\Http\Controllers\pages\AccountSettingsConnections;
@@ -81,7 +83,11 @@ Route::get('chart/{sprint_id}', 'ChartController@index')->name('chart.index');
 Route::get('/create-burndown', 'BurndownChartController@create');
 // Route::get('/create-burnup', 'BurnupChartController@create');
 
+//Route for menu
+Route::get('/menu', 'MenuController@showMenu');
+
 //Route for team
+
 Route::get('team', 'TeamController@index')->name('team.index');
 Route::get('teams/create', 'TeamController@create')->name('teams.create');
 Route::get('teams/show', 'TeamController@show')->name('teams.show');
@@ -92,6 +98,10 @@ Route::get('teams/{team}/destroy', 'TeamController@destroy')->name('teams.destro
 Route::get('teams','TeamController@search');
 // Route::post('/send-invitation-email', 'TeamController@sendInvitationEmail')->name('send.invitation.email');
 Route::get('teams/sendmail','TeamController@sendMail')->name('Team.invitationEmailTest');
+
+Route::post('/getTeamMembers', [TeamMappingController::class, 'getTeamMembers'])->name('getTeamMembers');
+Route::post('/getTeamMembers1', [TeamMappingController::class, 'getTeamMembers1'])->name('getTeamMembers1');
+Route::get('teams','TeamController@search');
 
 //Route for Defect Feature
 Route::get('deffeature', 'DefectFeatureController@index')->name('deffeature.index');
@@ -135,6 +145,23 @@ Route::get('roles/{role}/edit', 'RoleController@edit')->name('roles.edit');
 Route::post('roles', 'RoleController@store')->name('roles.store');
 Route::post('roles/{role}', 'RoleController@update')->name('roles.update');
 Route::get('roles/{role}/destroy', 'RoleController@destroy')->name('roles.destroy');
+Route::post('/roles', [RoleController::class, 'createRole'])->name('roles.create');
+Route::post('/roles/assign', [RoleController::class, 'assignRole'])->name('roles.assign');
+
+//Route for adding users
+Route::post('/add-user', [UsersController::class, 'addUser'])->name('add_user');
+
+// Route to display the ACL management page
+Route::get('/pages/access-control-list', [AccessControlList::class, 'index'])->name('access-control-list');
+Route::resource('roles', RoleController::class);
+Route::resource('permissions', PermissionController::class);
+Route::put('/update-user/{id}', [UsersController::class, 'update'])->name('update_user');
+Route::post('/assign-role', [AccessControlList::class, 'assignRole'])->name('access-control-list.assignRole');
+Route::post('/assign-permission', [AccessControlList::class, 'assignPermission'])->name('access-control-list.assignPermission');
+Route::post('/saveAccessControl', [TeamMappingController::class, 'saveAccessControl'])->name('saveAccessControl');
+
+//Route for Dashboard
+Route::get('/layouts/app2', [DashboardController::class, 'index'])->name('layouts.app2');
 
 //Route for Coding Standard
 Route::get('codestand', 'CodingStandardController@index')->name('codestand.index');
@@ -229,6 +256,7 @@ Route::get('perfeatures/{perfeature}/destroy', 'PerformanceFeatureController@des
 Route::get('role', 'RoleController@index')->name('role.index');
 Route::get('roles/create', 'RoleController@create')->name('roles.create');
 Route::get('roles/{role}/edit', 'RoleController@edit')->name('roles.edit');
+Route::get('/users', [UsersController::class, 'showAllUsers'])->name('users.index');
 Route::post('roles', 'RoleController@store')->name('roles.store');
 Route::patch('roles/{role}', 'RoleController@update')->name('roles.update');
 Route::get('roles/{role}/destroy', 'RoleController@destroy')->name('roles.destroy');

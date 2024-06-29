@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class RenameImageUrlsToImageUrlInForumsTable extends Migration
+class CreateRoleUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,11 @@ class RenameImageUrlsToImageUrlInForumsTable extends Migration
      */
     public function up()
     {
+        if(Schema::hasTable('user_role')) return;
 
+        Schema::create('user_role', function (Blueprint $table) {
+
+        });
     }
 
     /**
@@ -23,8 +27,6 @@ class RenameImageUrlsToImageUrlInForumsTable extends Migration
      */
     public function down()
     {
-        Schema::table('forums', function (Blueprint $table) {
-            $table->renameColumn('image_url', 'image_urls');
-        });
+        Schema::dropIfExists('role_user');
     }
 }

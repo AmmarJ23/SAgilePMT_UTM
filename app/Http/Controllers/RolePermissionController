@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Role;
+use App\Permission;
+
+class RolePermissionController extends Controller
+{
+    public function index()
+    {
+        $roles = Role::with('permissions')->get();
+        $permissions = Permission::all();
+        return view('role_permissions.index', compact('roles', 'permissions'));
+    }
+
+    public function createRole(Request $request)
+    {
+        $role = Role::create(['name' => $request->name]);
+        return redirect()->back();
+    }
+
+    public function createPermission(Request $request)
+    {
+        $permission = Permission::create(['name' => $request->name]);
+        return redirect()->back();
+    }
+
+    public function assignPermissionToRole(Request $request)
+    {
+        $role = Role::findById($request->role_id);
+        $permission = Permission::findById($request->permission_id);
+        $role->givePermissionTo($permission);
+        return redirect()->back();
+    }
+
+    public function revokePermissionFromRole(Request $request)
+    {
+        $role = Role::findById($request->role_id);
+        $permission = Permission::findById($request->permission_id);
+        $role->revokePermissionTo($permission);
+        return redirect()->back();
+    }
+
+    public function deleteRole($id)
+    {
+        $role = Role::findById($id);
+        $role->delete();
+        return redirect()->back();
+    }
+
+    public function deletePermission($id)
+    {
+        $permission = Permission::findById($id);
+        $permission->delete();
+        return redirect()->back();
+    }
+}

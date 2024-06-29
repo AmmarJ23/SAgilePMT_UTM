@@ -28,5 +28,33 @@ class TeamMapping extends Model
     }
 
 
+    public function showAccessControlList()
+    {
+        $teams = TeamMapping::select('team_id', 'team_name')->distinct()->get();
+        return view('content/pages/access-control-list', compact('teams'));
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->attachments = $model->attachments ?? true;
+            $model->projects = $model->projects ?? true;
+            $model->sprints = $model->sprints ?? true;
+            $model->user_stories = $model->user_stories ?? true;
+            $model->forum = $model->forum ?? true;
+            $model->security_feature = $model->security_feature ?? true;
+        });
+
+        static::updating(function ($model) {
+            $model->attachments = $model->attachments ?? true;
+            $model->projects = $model->projects ?? true;
+            $model->sprints = $model->sprints ?? true;
+            $model->user_stories = $model->user_stories ?? true;
+            $model->forum = $model->forum ?? true;
+            $model->security_feature = $model->security_feature ?? true;
+        });
+    }
 
 }

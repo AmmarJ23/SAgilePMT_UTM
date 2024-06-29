@@ -26,20 +26,26 @@ class ProductFeatureController extends Controller
     if (\Auth::check()) {
         $user = \Auth::user();
         $teammapping = \App\TeamMapping::where('username', '=', $user->username)->pluck('team_name')->toArray();
-        $projects = Project::whereIn('team_name', $teammapping)->get();
-        
+        // $projects = Project::whereIn('team_name', $teammapping)->get();
+
+        // Fetch projects that match the team mapping and where the user has project access
+        $projects = $user->projects()
+            ->whereIn('team_name', $teammapping)
+            ->wherePivot('project_access', 1)
+            ->get();
+
         return view('profeature.index')
             ->with('pros', $projects)
             ->with('title', 'Project');
     } else {
         $allProjects = $project->all(); // Fetch all projects if user not authenticated
-        
+
         return view('project.index', ['projects' => $allProjects]);
     }
 }
 
 
-    //Main Sprint Page 
+    //Main Sprint Page
     public function index2($proj_name)
     {
         //Get the project where user's team name(s) is the same with project's team name
@@ -52,7 +58,26 @@ class ProductFeatureController extends Controller
         $project = Project::where('proj_name', $proj_name)->first();
 
         //Gets all the sprints related to the project
-        $sprint = Sprint::where('proj_name', '=', "$proj_name")->get(); 
+        // $sprint = Sprint::where('proj_name', '=', "$proj_name")->get();
+
+        $userAccess = \App\UserAccess::where('user_id', $user->id)
+        ->where('project_id', $project->id)
+        ->first();
+
+        // Get all sprints related to the project that the user has access to
+        $sprint = collect(); // Default to an empty collection
+
+        if ($userAccess && $userAccess->sprint_access) {
+        $sprint = Sprint::where('proj_name', $proj_name)
+            ->whereIn('sprint_name', function($query) use ($user) {
+                $query->select('sprint_name')
+                    ->from('project_user')
+                    ->where('user_id', $user->id)
+                    ->where('sprint_access', 1);
+            })
+            ->get();
+        }
+
 
         return view('profeature.index2')
             ->with('title', 'Sprints for ' . $proj_name)
@@ -61,7 +86,7 @@ class ProductFeatureController extends Controller
             ->with('projects', $project);
     }
 
-    //Main UserStory Page 
+    //Main UserStory Page
     public function index3($sprint_id)
     {
         //Get the project where user's team name(s) is the same with project's team name
@@ -70,16 +95,16 @@ class ProductFeatureController extends Controller
         $pro = \App\Project::whereIn('team_name', $teammapping)->get(); // use whereIn() to retrieve the projects that have a team_name value in the array
 
         $statuses = Status::all();
-        //Get current sprint 
+        //Get current sprint
         $sprint = Sprint::where('sprint_id', $sprint_id)->first();
-        
+
         $userstory = \App\UserStory::where('sprint_id', '=', $sprint_id)->get();
         return view('profeature.index3',['userstories'=>$userstory,])
             ->with('sprint_id', $sprint->sprint_id)
             ->with('pros', $pro)
             ->with('statuses', $statuses)
             ->with('title', 'User Story for ' . $sprint->sprint_name);
-        
+
     }
 
     public function backlog($proj_id)
@@ -89,9 +114,9 @@ class ProductFeatureController extends Controller
         $teammapping = \App\TeamMapping::where('username', '=', $user->username)->pluck('team_name')->toArray(); // use pluck() to retrieve an array of team names
         $pro = \App\Project::whereIn('team_name', $teammapping)->get(); // use whereIn() to retrieve the projects that have a team_name value in the array
 
-        //Get current project 
+        //Get current project
         $project = Project::where('id', $proj_id)->first();
-        
+
         $userstory = \App\UserStory::where('proj_id', $proj_id)
             ->whereNull('sprint_id')
             ->get();
@@ -141,7 +166,7 @@ class ProductFeatureController extends Controller
         //
     }
 
-    
+
     /**
      * Show the form for editing the specified resource.
      *

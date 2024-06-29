@@ -17,26 +17,33 @@ use Illuminate\Http\Request;
 class SprintController extends Controller
 {
     public function index()
-    { 
+    {
         $project = new Project;
         if (\Auth::check())
         {
             $id = \Auth::user()->getId();
-            
+
+            $user = \Auth::user();
+            $id = \Auth::user()->getId();
+
+            // Fetch sprints the user has access to
+            $sprint = $user->sprints()->wherePivot('sprint_access', true)->get();
+
+
         }
         if($id)
         {
             $pro = \App\Project::where('user_id', '=', $id)->get();
             return view('profeature.index',['projects'=>$project, 'pros'=>$pro]);
         }
-        
+
         $sprint = new Sprint;
         return view ('sprint.index', ['sprints'=>$sprint->all(), 'projects'=>$project->all()]);
     }
 
     public function create($proj_name)
     {
-        //We want to send project to store project name and display 
+        //We want to send project to store project name and display
         //the start and end project date at the create sprint page
 
         $project = Project::where('proj_name', $proj_name)->first();
@@ -46,7 +53,7 @@ class SprintController extends Controller
     }
 
     public function destroy(Sprint $sprint)
-    {   
+    {
         $proj_name = $sprint->proj_name;
         $deleted_sprint = $sprint->sprint_name;
         $sprints = Sprint::where('proj_name', $proj_name)->get();
@@ -58,10 +65,10 @@ class SprintController extends Controller
         foreach ($userstories as $userstory) {
             // Get tasks related to each user story
             $tasks = Task::where('userstory_id', $userstory->u_id)->get();
-            
+
             // Delete tasks related to the user story
             $tasks->each->delete();
-            
+
             // Delete the user story
             $userstory->delete();
         }
@@ -75,8 +82,8 @@ class SprintController extends Controller
             ->with('sprints', $sprints)
             ->with('projects', $project);
     }
- 
-    
+
+
     public function store(Request $request)
     {
         // Get the current project
@@ -109,7 +116,7 @@ class SprintController extends Controller
 
             // Validate the request with custom error messages
             $validation = $request->validate([
-                'sprint_name' => 'required|unique:sprint,sprint_name,NULL,sprint_id,proj_name,'.$request->proj_name, 
+                'sprint_name' => 'required|unique:sprint,sprint_name,NULL,sprint_id,proj_name,'.$request->proj_name,
                 'sprint_desc' => 'required',
                 'start_sprint' => 'required|date|after_or_equal:'.$project->start_date,
                 'end_sprint' => [
@@ -122,7 +129,7 @@ class SprintController extends Controller
             ], $messages);
 
 
-        //assign request values to new sprint 
+        //assign request values to new sprint
         $sprint = new Sprint();
         $sprint->sprint_name = $request->sprint_name;
         $sprint->proj_name = $request->proj_name;
@@ -172,8 +179,8 @@ class SprintController extends Controller
         //Only save desc, and dates because no need to update name and project name
         $sprint->sprint_desc = $request->sprint_desc;
         $sprint->start_sprint = $request->start_sprint;
-        $sprint->end_sprint = $request->end_sprint; 
-    
+        $sprint->end_sprint = $request->end_sprint;
+
         //Get the current project
         $project = Project::where('proj_name', $sprint->proj_name)->first();
 
@@ -205,7 +212,7 @@ class SprintController extends Controller
 
             // Validate the request with custom error messages
             $validation = $request->validate([
-                'sprint_name' => 'required|unique:sprint,sprint_name,NULL,sprint_id,proj_name,'.$request->proj_name, 
+                'sprint_name' => 'required|unique:sprint,sprint_name,NULL,sprint_id,proj_name,'.$request->proj_name,
                 'sprint_desc' => 'required',
                 'start_sprint' => 'required|date|after_or_equal:'.$project->start_date,
                 'end_sprint' => [
@@ -227,7 +234,6 @@ class SprintController extends Controller
             ->with('sprints', $sprints)
             ->with('projects', $project);
     }
-    
+
 
 }
-        

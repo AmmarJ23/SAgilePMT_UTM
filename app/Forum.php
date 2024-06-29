@@ -11,8 +11,8 @@ class Forum extends Model
     protected $fillable = [
         'title', 'content', 'category', 'image_urls', 'user_id','project_id',
     ];
-    
-    
+
+
     // Define relationships if needed, e.g., a forum belongs to a user.
     public function user()
     {
@@ -34,6 +34,11 @@ class Forum extends Model
     public function project()
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withPivot('forum_access');
     }
 
 }
