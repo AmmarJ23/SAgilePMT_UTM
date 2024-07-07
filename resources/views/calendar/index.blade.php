@@ -1,6 +1,5 @@
 @extends('layouts.app2')
-@include('inc.style') <!-- Include any other stylesheets needed -->
-
+@include('inc.style')
 @section('content')
 
 <div class="container">
@@ -14,7 +13,7 @@
     </div>
 </div>
 
-@include('inc.navbar') <!-- Include your navbar if it's not already included -->
+@include('inc.navbar')
 
 @endsection
 
@@ -66,7 +65,7 @@
         display: inline-flex;
         align-items: center;
         padding: 8px 12px;
-        cursor: pointer; /* Add cursor pointer for better UX */
+        cursor: pointer;
     }
 
     .fc-button:hover {
@@ -97,7 +96,6 @@
         padding: 8px 12px;
     }
 
-    /* Font Awesome Icons */
     .fc-prev-button .fc-icon:before,
     .fc-next-button .fc-icon:before {
         font-family: 'Font Awesome 5 Free';
@@ -109,19 +107,18 @@
         content: '\f053';
     }
 
-    .fc-next-button .fc-icon:before {
+    .fc-next-button .fc-icon:after {
         content: '\f054';
     }
 
-    /* Event styling adjustments */
     .fc-event {
-        margin-bottom: 5px; /* Adjust margin between events */
-        padding: 2px 5px; /* Adjust padding for event content */
-        background-color: #f0f0f0; /* Example background color */
-        border: 1px solid #ccc; /* Example border */
-        border-radius: 3px; /* Example border radius */
-        font-size: 0.8rem; /* Smaller font size for events */
-        line-height: 1.2; /* Adjust line height for better compactness */
+        margin-bottom: 5px;
+        padding: 2px 5px;
+        background-color: #f0f0f0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        font-size: 0.8rem;
+        line-height: 1.2;
     }
 </style>
 

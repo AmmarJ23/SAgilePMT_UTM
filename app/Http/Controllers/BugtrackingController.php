@@ -11,20 +11,21 @@ use Illuminate\Support\Facades\Mail;
 class BugtrackingController extends Controller
 {
 
-    public function index()
+    public function index(Request $request, $projectId)
 {
-    // Fetch all bugtrackings from the database
-    $bugtracks = Bugtracking::all();
+    // Fetch all bugtrackings for the specified project from the database
+    $bugtracks = Bugtracking::where('project_id', $projectId)->get();
 
     // Get unique statuses from bugtrackings
     $statuses = $bugtracks->unique('status')->pluck('status');
 
-    // Return the view with bugtracks data, statuses, and users
-    return view('bugtrack.index', compact('bugtracks', 'statuses'));
+    // Return the view with bugtracks data, statuses, and projectId
+    return view('bugtrack.index', compact('bugtracks', 'statuses', 'projectId'));
 }
 
 
-public function create()
+
+public function create($projectId = null)
 {
     // Fetch all users from the database
     $users = User::all();
@@ -32,12 +33,13 @@ public function create()
     // Get the authenticated user
     $authUser = auth()->user();
 
-    // Return the view with users data and authenticated user
-    return view('bugtrack.create', compact('users', 'authUser'));
+    // Return the view with users data, authenticated user, and projectId
+    return view('bugtrack.create', compact('users', 'authUser', 'projectId'));
 }
 
 
-public function store(Request $request)
+
+public function store(Request $request, $projectId)
 {
     // Validate the request
     $validatedData = $request->validate([
@@ -48,12 +50,14 @@ public function store(Request $request)
         'flow' => 'nullable|string',
         'expected_results' => 'nullable|string',
         'actual_results' => 'nullable|string',
-        'attachment' => 'nullable|string',
         'assigned_to' => 'nullable|integer',
     ]);
 
     // Set the reported_by field to the authenticated user's ID
     $validatedData['reported_by'] = auth()->user()->id;
+
+    // Add projectId to the validated data
+    $validatedData['project_id'] = $projectId;
 
     // Create new Bugtrack instance
     $bugtrack = Bugtracking::create($validatedData);
@@ -67,11 +71,12 @@ public function store(Request $request)
     }
 
     // Redirect after successful creation
-    return redirect()->route('bugtrack.index')->with('success', 'Bug created successfully');
+    return redirect()->route('bugtrack.index', ['projectId' => $projectId]);
 }
 
 
-    public function updateStatus(Request $request, $bugId)
+
+public function updateStatus(Request $request, $bugId)
     {
         // Validate the request
         $request->validate([
@@ -89,18 +94,25 @@ public function store(Request $request)
         return response()->json(['success' => true]);
     }
 
-    public function details($id)
-{
-    // Fetch the bugtrack item from the database
-    $bugtrack = Bugtracking::findOrFail($id);
-
-    // Return the detailed information as JSON
-    return response()->json([
-        'title' => $bugtrack->title,
-        'description' => $bugtrack->description,
-        'assigned_to' => $bugtrack->assigned_to,
-        // Add more fields as needed
-    ]);
-}
+    public function view($projectId, $bugtrackId)
+    {
+        // Fetch the bugtrack by ID within the project
+        $bugtrack = Bugtracking::with(['assignee', 'reporter'])
+                                ->where('project_id', $projectId)
+                                ->find($bugtrackId);
+    
+        if (!$bugtrack) {
+            // Handle the case when the bugtrack is not found
+            return redirect()->route('bugtrack.index', ['projectId' => $projectId])
+                             ->with('error', 'Bugtrack not found.');
+        }
+    
+        return view('bugtrack.read', [
+            'projectId' => $projectId,
+            'bugtrack' => $bugtrack,
+        ]);
+    }
+    
+    
 
 }

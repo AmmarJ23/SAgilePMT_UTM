@@ -9,6 +9,7 @@ class Bugtracking extends Model
     protected $table = 'bugtrack';
     
     protected $fillable = [
+        'project_id',
         'title',
         'description',
         'severity',
@@ -16,7 +17,6 @@ class Bugtracking extends Model
         'flow',
         'expected_results',
         'actual_results',
-        'attachment',
         'assigned_to',
         'reported_by'
     ];

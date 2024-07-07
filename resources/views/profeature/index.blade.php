@@ -22,7 +22,7 @@
             <th>Backlog</th>
             <th>Sprint</th>
             <th>Forum</th>
-            <th>Defect Tracking</th>
+            <th>Bug tracking</th>
         </tr>
 
         <!-- Check if projects exist -->
@@ -60,7 +60,7 @@
         <td><a href="{{ route('backlog.index', $project->id) }}">View</a></td>
         <td><a href="{{ action('ProductFeatureController@index2', $project->proj_name) }}">View</a></td>
         <td><a href="{{ route('forum.index', ['projectId' => $project->id]) }}">View</a></td>
-        <td><a href="{{ action('BugtrackingController@index') }}">View</a></td>
+        <td><a href="{{ route('bugtrack.index', ['projectId' => $project->id]) }}">View</a></td>
 @endforeach
 
         @endif

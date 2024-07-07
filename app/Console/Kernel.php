@@ -57,17 +57,17 @@ class Kernel extends ConsoleKernel
      *
      * @return void
      */
-    protected function commands()
-{
-    $this->load(__DIR__.'/Commands');
+//     protected function commands()
+// {
+//     $this->load(__DIR__.'/Commands');
 
-    // Load additional commands if any
-    // require base_path('routes/console.php');
+//     // Load additional commands if any
+//     // require base_path('routes/console.php');
 
-    // Register your custom command
-    $this->commands([
-        \App\Console\Commands\SendReminderNotifications::class,
-    ]);
-}
+//     // Register your custom command
+//     $this->commands([
+//         \App\Console\Commands\SendReminderNotifications::class,
+//     ]);
+// }
 
 }

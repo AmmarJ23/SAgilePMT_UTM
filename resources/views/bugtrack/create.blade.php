@@ -4,7 +4,7 @@
 @section('content')
 <div class="container mx-auto mt-8 p-8 bg-white rounded-lg shadow-md">
     <h1 class="text-3xl font-semibold mb-8 text-center">Create a New Bugtrack</h1>
-    <form action="{{ route('bugtrack.store') }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('bugtrack.store', ['projectId' => $projectId]) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <!-- Error Messages -->
         @if ($errors->any())
@@ -24,7 +24,7 @@
         <!-- Description -->
         <div class="mb-6">
             <label for="description" class="block text-gray-700 text-lg font-semibold mb-2">Description <span class="text-red-500">*</span></label>
-            <textarea id="description" name="description" class="form-textarea h-40 resize-none" placeholder="Enter the bug description" required></textarea>
+            <textarea id="description" name="description" class="form-textarea h-40 resize-none" placeholder="Enter the bug description" required autofocus></textarea>
             <p class="text-gray-500 text-sm mt-2">Max 500 characters</p>
         </div>
         <!-- Severity and Status -->
@@ -54,17 +54,12 @@
         <!-- Expected Results -->
         <div class="mb-6">
             <label for="expected_results" class="block text-gray-700 text-lg font-semibold mb-2">Expected Results</label>
-            <textarea id="expected_results" name="expected_results" class="form-textarea h-32 resize-none" placeholder="Enter the expected results"></textarea>
+            <textarea id="expected_results" name="expected_results" class="form-textarea h-32 resize-none" placeholder="Enter the expected results" required autofocus></textarea>
         </div>
         <!-- Actual Results -->
         <div class="mb-6">
             <label for="actual_results" class="block text-gray-700 text-lg font-semibold mb-2">Actual Results</label>
-            <textarea id="actual_results" name="actual_results" class="form-textarea h-32 resize-none" placeholder="Enter the actual results"></textarea>
-        </div>
-        <!-- Attachment -->
-        <div class="mb-6">
-            <label for="attachment" class="block text-gray-700 text-lg font-semibold mb-2">Attachment</label>
-            <input type="text" id="attachment" name="attachment" class="form-input" placeholder="Enter the attachment">
+            <textarea id="actual_results" name="actual_results" class="form-textarea h-32 resize-none" placeholder="Enter the actual results" required autofocus></textarea>
         </div>
         <!-- Assigned To and Reported By -->
         <div class="flex mb-6">
@@ -83,11 +78,12 @@
             </div>
         </div>
         <!-- Submit Button -->
+        <br>
         <div class="flex justify-center mt-8 space-x-4">
             <button type="submit" class="btn-primary">
                 <i class="fas fa-check mr-2"></i> Create Bugtrack
             </button>
-            <a href="{{ route('bugtrack.index') }}" class="btn-secondary">
+            <a href="{{ route('bugtrack.index', ['projectId' => $projectId]) }}" class="btn-secondary">
                 <i class="fas fa-times mr-2"></i> Cancel
             </a>
         </div>
@@ -114,6 +110,54 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const descriptionTextarea = document.getElementById('description');
+        const charLimit = 500;
+        const successMessage = document.createElement('div');
+        successMessage.className = 'success-message';
+        successMessage.textContent = 'Bugtrack created successfully!';
+        successMessage.style.display = 'none';
+
+        form.addEventListener('submit', function (e) {
+            let valid = true;
+            const descriptionLength = descriptionTextarea.value.length;
+
+            // Clear previous validation messages
+            document.querySelectorAll('.validation-error').forEach(el => el.remove());
+
+            // Check required fields
+            form.querySelectorAll('[required]').forEach(function (input) {
+                if (!input.value) {
+                    valid = false;
+                    showValidationError(input, 'This field is required.');
+                }
+            });
+
+            // Validate description length
+            if (descriptionLength > charLimit) {
+                valid = false;
+                showValidationError(descriptionTextarea, `Description must be less than ${charLimit} characters.`);
+            }
+
+            if (!valid) {
+                e.preventDefault();
+            } else {
+                successMessage.style.display = 'block';
+                document.body.appendChild(successMessage);
+            }
+        });
+
+        function showValidationError(element, message) {
+            const error = document.createElement('div');
+            error.className = 'validation-error text-red-500 text-sm mt-2';
+            error.textContent = message;
+            element.parentNode.appendChild(error);
+        }
+    });
+</script>
+
 
 <!-- Custom CSS -->
 <style>
@@ -223,5 +267,25 @@
         background-color: #f0f0f0;
         border-color: #ccc;
     }
+
+    .validation-error {
+    color: #e53e3e;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Success Message Styles */
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #48bb78;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    z-index: 1000;
+}
 </style>
 @endsection

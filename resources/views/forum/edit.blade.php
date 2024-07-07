@@ -29,15 +29,11 @@
         </div>
     </form>
     
-    <form action="{{ route('forum.destroy', ['forumPost' => $forumPost]) }}" method="POST">
-        @csrf
-        @method('DELETE')
-        <div style="text-align: right; margin-top: 1rem;">
-            <button type="submit" style="color: #e53e3e; background-color: transparent; border: 1px solid #e53e3e; padding: 0.75rem 1.5rem; border-radius: 0.375rem; cursor: pointer; font-size: 1rem; font-weight: 600; transition: background-color 0.3s ease-in-out;">
-                <i class="fas fa-trash-alt mr-2"></i> Delete
-            </button>
-        </div>
-    </form>
+    <div style="text-align: right; margin-top: 1rem;">
+        <a href="{{ route('forum.view', ['projectId' => $projectId, 'forumPostId' => $forumPost->id]) }}" class="btn btn-outline-danger">
+            <i class="fas fa-arrow-left mr-2"></i> Back to Forum
+        </a>
+    </div>
     
     @error('updatedContent')
     <span style="color: #e53e3e; font-size: 0.875rem; margin-top: 0.5rem; display: block;">{{ $message }}</span>

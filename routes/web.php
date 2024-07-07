@@ -339,31 +339,11 @@ Route::get('perfeatures/{perfeature}/destroy', 'PerformanceFeatureController@des
 //Route for delete Mapping
 Route::post('mapping/destroy', 'MappingController@destroy')->name('mapping.destroy');
 
-// Route for Forum
-Route::get('/forum/{projectId}', 'ForumController@index')->name('forum.index');
-Route::get('/forum/create/{projectId?}', 'ForumController@create')->name('forum.create');
-Route::post('/forum/{projectId}', 'ForumController@store')->name('forum.store');
-// Route for viewing a forum post within a project
-Route::get('/forum/{projectId}/{forumPostId}/view', 'ForumController@view')->name('forum.view');
 
-Route::get('/forum/{forumPost}/edit', 'ForumController@edit')->name('forum.edit');
-Route::put('/forum/{forumPost}', 'ForumController@update')->name('forum.update');
-Route::delete('/forum/{forumPost}', 'ForumController@destroy')->name('forum.destroy');
 
 
 // Route for Comments
 Route::post('/forum/{forum_id}/comments', 'CommentController@store')->name('comments.store');
-
-// Route for Forum Favourite
-// Define a single route for both favorite and unfavorite actions
-Route::match(['post', 'delete'], '/forum/favorite/{forumId}', 'ForumFavoriteController@toggleFavorite')->name('forum.favorite');
-
-// //Cost Estimation Tool
-// Route::get('/costestimation', 'App\Http\Controllers\QuotationController@costestimation')->name('costestimation');
-// Route::post('/cost-estimation', [QuotationController::class, 'cost_estimation_save'])->name('cost-estimation-save');
-// Route::post('/cost-estimation/update/{id}', [QuotationController::class, 'cost_estimation_update'])->name('cost-estimation-update');
-// Route::get('/cost/{id}/edit', 'App\Http\Controllers\QuotationController@edit')->name('cost-estimation-edit');
-// Route::get('/search', 'App\Http\Controllers\QuotationController@search_company')->name('search_quotation');
 
 //Route for Calendar
 Route::get('/calendar/index', 'CalendarController@index')->name('calendar.index');
@@ -373,15 +353,21 @@ Route::patch('/calendar/{id}', 'CalendarController@update')->name('calendar.upda
 Route::delete('/calendar/{id}', 'CalendarController@destroy')->name('calendar.destroy');
 
 //Route for BugTracking
-Route::get('/bugtrack', 'BugtrackingController@index')->name('bugtrack.index');
-Route::get('/bugtrack/create', 'BugtrackingController@create')->name('bugtrack.create');
-Route::post('/bugtrack', 'BugtrackingController@store')->name('bugtrack.store');
+Route::get('/bugtrack/{projectId}', 'BugtrackingController@index')->name('bugtrack.index');
+Route::get('/bugtrack/create/{projectId?}', 'BugtrackingController@create')->name('bugtrack.create');
+Route::post('/bugtrack/{projectId}', 'BugtrackingController@store')->name('bugtrack.store');
 Route::put('/bugtrack/{bugId}/update-status', 'BugtrackingController@updateStatus')->name('bugtrack.update_status');
-Route::get('/bugtrack/{id}/details', 'BugtrackController@details')->name('bugtrack.details');
+Route::get('/bugtrack/{projectId}/{bugtrackId}/view', 'BugtrackingController@view')->name('bugtrack.view');
 
 
-
-
+// Route for Forum
+Route::get('/forum/{projectId}', 'ForumController@index')->name('forum.index');
+Route::get('/forum/create/{projectId?}', 'ForumController@create')->name('forum.create');
+Route::post('/forum/{projectId}', 'ForumController@store')->name('forum.store');
+Route::get('/forum/{projectId}/{forumPostId}/view', 'ForumController@view')->name('forum.view');
+Route::get('/forum/{forumPost}/edit', 'ForumController@edit')->name('forum.edit');
+Route::put('/forum/{forumPost}', 'ForumController@update')->name('forum.update');
+Route::delete('/forum/{forumPost}', 'ForumController@destroy')->name('forum.destroy');
 
 //route for burn down chart
 Route::get('/{proj_id}/{sprint_id}/burn-down-chart', 'BurnDownChartController@index')->name('burnDown.index');

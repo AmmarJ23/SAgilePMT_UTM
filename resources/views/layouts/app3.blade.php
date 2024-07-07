@@ -111,80 +111,147 @@
   </div>
   <!--/ Transactions -->
 
-  <!-- Total Earnings -->
-  <div class="col-xl-4 col-md-6">
-    <div class="card">
-      <div class="card-header d-flex align-items-center justify-content-between">
-        <h5 class="card-title m-0 me-2">Project List</h5>
-        <div class="dropdown">
-          <button class="btn p-0" type="button" id="totalEarnings" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="mdi mdi-dots-vertical mdi-24px"></i>
-          </button>
-          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="totalEarnings">
-            <a class="dropdown-item" href="javascript:void(0);">Last 28 Days</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Month</a>
-            <a class="dropdown-item" href="javascript:void(0);">Last Year</a>
-          </div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="mb-3 mt-md-3 mb-md-5">
-          <div class="d-flex align-items-center">
-            <h2 class="mb-0">10 Projects</h2>
-            <!--<span class="text-success ms-2 fw-medium">
-              <i class="mdi mdi-menu-up mdi-24px"></i>
-              <small>10%</small>
-            </span>-->
-          </div>
-          <small class="mt-1">Different types of projects</small>
-        </div>
-        <ul class="p-0 m-0">
-          <li class="d-flex mb-4 pb-md-2">
-            <div class="avatar flex-shrink-0 me-3">
-              <img src="{{asset('assets/img/icons/misc/zipcar.png')}}" alt="zipcar" class="rounded">
+  <div class="row gy-4">
+    <!-- Event Count Over Time Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Calendar Events</h5>
             </div>
-            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-            <!--Projects Listed on here, the company, company name and project name here are just placeholders for now-->
-                <div class="me-2">
+            <div class="card-body">
+                <div id="eventChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var eventOptions = {
+                            chart: {
+                                type: 'bar', // Changed to bar type
+                                height: 350,
+                                zoom: {
+                                    enabled: false
+                                }
+                            },
+                            series: [{
+                                name: 'Event Count',
+                                data: @json(array_values($countsPerMonth))
+                            }],
+                            xaxis: {
+                                categories: @json(array_keys($countsPerMonth)),
+                                labels: {
+                                    rotate: -45,
+                                    formatter: function (value) {
+                                        return value.split(' ')[0]; // Display only the month part
+                                    }
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Total Events'
+                                },
+                                tickAmount: 5,
+                                ticks: [1, 2, 3, 4, 5]
+                            },
+                        };
 
-                <h6 class="mb-0">Zipcar</h6>
-                <small>Octacorp Project</small>
-              </div>
-              <div>
-                <!-- <h6 class="mb-2">$24,895.65</h6> -->
-                <div class="progress bg-label-primary" style="height: 4px;">
-                  <div class="progress-bar bg-primary" style="width: 75%" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
+                        var eventChart = new ApexCharts(document.querySelector("#eventChart"), eventOptions);
+                        eventChart.render();
+                    });
+                </script>
             </div>
-          </li>
-          <li class="d-flex mb-4 pb-md-2">
-            <div class="avatar flex-shrink-0 me-3">
-              <img src="{{asset('assets/img/icons/misc/bitbank.png')}}" alt="bitbank" class="rounded">
-            </div>
-            <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-              <div class="me-2">
-                <h6 class="mb-0">Bitbank</h6>
-                <small>Shaft Developed Project</small>
-              </div>
-              <div>
-
-                <div class="progress bg-label-info" style="height: 4px;">
-                  <div class="progress-bar bg-info" style="width: 75%" role="progressbar" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                </div>
-              </div>
-            </div>
-          </li>
-          <li>
-          <div class="d-grid mt-3 mt-md-5">
-            <button class="btn btn-primary" type="button" style="background-color: #3f58b0;">More Projects</button>
-          </div>
-          </li>
-        </ul>
-      </div>
+        </div>
     </div>
+
+    <!-- Bug Status Distribution Chart -->
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-1">Bug Status Distribution</h5>
+            </div>
+            <div class="card-body">
+                <div id="bugStatusChart" style="height: 350px;"></div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var options = {
+                            chart: {
+                                type: 'pie',
+                                height: 350
+                            },
+                            series: @json($bugChartData['series']),
+                            labels: @json($bugChartData['labels']),
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#bugStatusChart"), options);
+                        chart.render();
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gy-4">
+  <!-- Project Progress Chart -->
+  <div class="col-lg-12">
+      <div class="card">
+          <div class="card-header">
+              <h5 class="mb-1">Project Progress</h5>
+          </div>
+          <div class="card-body">
+              <div id="projectProgressChart" style="height: 350px;"></div>
+              <script>
+                  document.addEventListener('DOMContentLoaded', function () {
+                      // Fake data for testing
+                      var fakeProjectProgressData = @json($pros->pluck('progress'));
+                      var fakeProjectNames = @json($pros->pluck('proj_name'));
+                      // Define chart options
+                      var projectProgressOptions = {
+                          chart: {
+                              type: 'bar',
+                              height: 350,
+                              stacked: true,
+                              zoom: {
+                                  enabled: false
+                              }
+                          },
+                          series: [{
+                              name: 'Progress',
+                              data: fakeProjectProgressData
+                          }],
+                          xaxis: {
+                              categories: fakeProjectNames,
+                              labels: {
+                                  rotate: -45
+                              }
+                          },
+                          yaxis: {
+                              title: {
+                                  text: 'Progress (%)'
+                              },
+                              max: 100
+                          },
+                          plotOptions: {
+                              bar: {
+                                  horizontal: false,
+                                  columnWidth: '55%'
+                              }
+                          },
+                          fill: {
+                              opacity: 1
+                          },
+                          legend: {
+                              position: 'top'
+                          }
+                      };
+
+                      // Initialize and render the chart
+                      var projectProgressChart = new ApexCharts(document.querySelector("#projectProgressChart"), projectProgressOptions);
+                      projectProgressChart.render();
+                  });
+              </script>
+          </div>
+      </div>
   </div>
-  <!--/ Total Earnings -->
+</div>
+
 
   <!-- Four Cards -->
   <div class="col-xl-4 col-md-6">

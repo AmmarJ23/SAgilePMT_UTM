@@ -1,0 +1,101 @@
+@extends('layouts.app2')
+
+@section('title', 'Bugtrack View')
+
+@section('content')
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h3 class="mb-0">Bugtrack Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th class="bg-light" style="width: 30%;">Name</th>
+                                        <td>{{ $bugtrack->title }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Description</th>
+                                        <td>{{ $bugtrack->description }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Severity</th>
+                                        <td>{{ ucfirst($bugtrack->severity) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Status</th>
+                                        <td>{{ ucfirst($bugtrack->status) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Flow</th>
+                                        <td>{{ $bugtrack->flow }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Expected Results</th>
+                                        <td>{{ $bugtrack->expected_results }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Actual Results</th>
+                                        <td>{{ $bugtrack->actual_results }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Assigned To</th>
+                                        <td>{{ $bugtrack->assignee->name }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="bg-light">Reported By</th>
+                                        <td>{{ $bugtrack->reporter->name }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <a href="{{ route('bugtrack.index', ['projectId' => $projectId]) }}" class="btn btn-primary">
+                            <i class="fas fa-arrow-left"></i> Go Back
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+<!-- Custom CSS -->
+<style>
+    .card-header {
+        padding: 0.75rem 1.25rem;
+        margin-bottom: 0;
+        background-color: #007bff;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+        color: #fff;
+    }
+
+    .table th, .table td {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+        vertical-align: top;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: normal;
+        width: 30%;
+    }
+
+    .table td {
+        background-color: #fff;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+</style>

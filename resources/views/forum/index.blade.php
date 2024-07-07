@@ -31,28 +31,24 @@
                         <div class="form-group">
                             <select name="category" id="category" class="form-control">
                                 <option value="">All Categories</option>
-                                <option value="Category 1" {{ $selectedCategory === 'Category 1' ? 'selected' : '' }}>Category 1</option>
-                                <option value="Category 2" {{ $selectedCategory === 'Category 2' ? 'selected' : '' }}>Category 2</option>
-                                <option value="Category 3" {{ $selectedCategory === 'Category 3' ? 'selected' : '' }}>Category 3</option>
-                                <!-- Add more categories here -->
+                                <option value="General Discussion" {{ $selectedCategory === 'General Discussion' ? 'selected' : '' }}>General Discussion</option>
+                                <option value="Announcements" {{ $selectedCategory === 'Announcements' ? 'selected' : '' }}>Announcements</option>
+                                <option value="Project Planning" {{ $selectedCategory === 'Project Planning' ? 'selected' : '' }}>Project Planning</option>
+                                <option value="Development" {{ $selectedCategory === 'Development' ? 'selected' : '' }}>Development</option>
+                                <option value="Design" {{ $selectedCategory === 'Design' ? 'selected' : '' }}>Design</option>
+                                <option value="Deployment" {{ $selectedCategory === 'Deployment' ? 'selected' : '' }}>Deployment</option>
+                                <option value="Feature Requests" {{ $selectedCategory === 'Feature Requests' ? 'selected' : '' }}>Feature Requests</option>
+                                <option value="Feedback" {{ $selectedCategory === 'Feedback' ? 'selected' : '' }}>Feedback</option>
+                                <option value="Documentation" {{ $selectedCategory === 'Documentation' ? 'selected' : '' }}>Documentation</option>
+                                <option value="Support" {{ $selectedCategory === 'Support' ? 'selected' : '' }}>Support</option>
+                                <option value="Off-Topic" {{ $selectedCategory === 'Off-Topic' ? 'selected' : '' }}>Off-Topic</option>
                             </select>
+                            <br>
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-filter mr-2"></i> Filter
                         </button>
                     </form>
-                </div>
-            </div>
-
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h3 class="h5">Forum Rules</h3>
-                    <ul class="list-unstyled">
-                        <li>Be respectful and considerate of others.</li>
-                        <li>No spamming or self-promotion.</li>
-                        <li>Stay on-topic in discussions.</li>
-                        <li>Report any inappropriate content.</li>
-                    </ul>
                 </div>
             </div>
 
@@ -72,36 +68,40 @@
                         <div class="text-center text-muted">
                             <i class="fas fa-info-circle fa-2x"></i> No forums found for "{{ $selectedCategory }}"
                         </div>
+                    @else
+                        @foreach($forumPosts as $forumPost)
+                            <div class="forum-card card mb-4 rounded-lg shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h2 class="h5">{{ $forumPost->title }}</h2>
+                                        <a href="{{ route('forum.view', ['projectId' => $projectId, 'forumPostId' => $forumPost->id]) }}" class="btn btn-primary btn-sm">
+                                            <i class="fas fa-comments"></i> View Forum
+                                        </a>
+                                    </div>
+                                    <div class="d-flex text-muted mt-3">
+                                        <div class="label-container">
+                                            <i class="fas fa-user-circle mr-1"></i>
+                                            <span>{{ $forumPost->user->name }}</span>
+                                        </div>
+                                        <div class="label-container">
+                                            <i class="far fa-calendar-alt mr-1"></i>
+                                            <span>{{ $forumPost->created_at->format('F j, Y') }}</span>
+                                        </div>
+                                        <div class="label-container">
+                                            <i class="fas fa-tag mr-1"></i>
+                                            <span class="text-uppercase">{{ $forumPost->category }}</span>
+                                        </div>
+                                    </div>
+                        
+                                    
+                                    <p class="mt-3">{{ \Illuminate\Support\Str::limit($forumPost->content, 150) }}</p>
+                                </div>
+                            </div>
+                        @endforeach
                     @endif
-
-                    @foreach($forumPosts as $forumPost)
-                    <div class="forum-card card mb-4 rounded-lg shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h2 class="h5">{{ $forumPost->title }}</h2>
-                                <a href="{{ route('forum.view', ['projectId' => $projectId, 'forumPostId' => $forumPost->id]) }}" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-comments"></i> View Forum
-                                </a>
-                            </div>
-                            <div class="d-flex text-muted mt-2">
-                                <div class="mr-4">
-                                    <i class="fas fa-user-circle mr-1"></i> {{ $forumPost->user->name }}
-                                </div>
-                                <div class="mr-4">
-                                    <i class="far fa-clock mr-1"></i> {{ $forumPost->created_at->diffForHumans() }}
-                                </div>
-                                <div>
-                                    <span class="badge badge-primary">{{ $forumPost->category }}</span>
-                                </div>
-                            </div>
-                            <p class="mt-2">{{ \Illuminate\Support\Str::limit($forumPost->content, 150) }}</p>
-                        </div>
-                    </div>
-                    @endforeach
-                
                 </div>
             </div>
-
+            
             <!-- Pagination Links -->
             <div class="text-center">
                 {{ $forumPosts->links() }}
@@ -160,6 +160,30 @@
         min-height: 1px;
         padding: 1.25rem;
     }
+
+    .badge-primary {
+        background-color: #007bff;
+        color: #fff;
+    }
+
+    .badge-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .forum-card {
+        border-left: 5px solid #007bff;
+    }
+
+    /* Adjustments for Labels */
+    .forum-card .text-muted .d-flex {
+        margin-bottom: 0.5rem;
+    }
+
+    .label-container {
+     margin-right: 15px; /* Adjust the spacing as needed */
+        display: flex;
+        align-items: center;
+    }}
 </style>
 
 <!-- Font Awesome CDN for icons -->

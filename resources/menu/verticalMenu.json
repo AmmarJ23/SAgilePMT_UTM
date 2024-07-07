@@ -146,22 +146,20 @@
         ]
     },
     {
-        "url": "/forum",
-        "name": "Forum",
-        "icon": "menu-icon tf-icons mdi mdi-message-outline",
-        "slug": "app-chat",
-        "target": "_blank",
-        "badge": [
-          "label-primary fs-tiny",
-          ""
-        ]
-      },
+      "url": "/profeature",
+      "name": "Project List",
+      "icon": "menu-icon tf-icons mdi mdi-format-list-bulleted",
+      "slug": "app-chat",
+      "badge": [
+        "label-primary fs-tiny",
+        ""
+      ]
+    },
       {
-        "url": "/calendar",
+        "url": "/calendar/index",
         "name": "Calendar",
         "icon": "menu-icon tf-icons mdi mdi-calendar-blank-outline",
         "slug": "app-calendar",
-        "target": "_blank",
         "badge": [
           "label-secondary fs-tiny",
           ""
