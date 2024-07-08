@@ -29,22 +29,21 @@ class ForumController extends Controller
 }
 
 
-public function view($projectId, $bugtrackId)
+public function view($projectId, $forumPostId)
 {
-    // Fetch the bugtrack by ID within the project
-    $bugtrack = Bugtracking::where('project_id', $projectId)->find($bugtrackId);
+    // Fetch the forum post by ID within the project
+    $forumPost = Forum::where('project_id', $projectId)->find($forumPostId);
 
-    if (!$bugtrack) {
-        // Handle the case when the bugtrack is not found
-        return redirect()->route('bugtrack.index', ['projectId' => $projectId])->with('error', 'Bugtrack not found.');
+    if (!$forumPost) {
+        // Handle the case when the forum post is not found
+        return redirect()->route('forum.index', ['projectId' => $projectId])->with('error', 'Forum post not found.');
     }
 
-    return view('bugtrack.view', [
+    return view('forum.view', [
         'projectId' => $projectId,
-        'bugtrack' => $bugtrack,
+        'forumPost' => $forumPost,
     ]);
 }
-
 
     
 public function create($projectId = null)

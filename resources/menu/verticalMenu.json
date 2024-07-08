@@ -14,7 +14,6 @@
           "url": "/home",
           "name": "Dashboard",
           "slug": "dashboard",
-          "target": "_blank",
           "badge": [
             "label-secondaryr fs-tiny",
             ""

@@ -8,7 +8,7 @@
     td, th {
       border: 1px solid #dddddd;
       text-align: left;
-      padding: 40px;
+      padding: 28px;
     }
     
     tr:nth-child(even) {

@@ -6,28 +6,37 @@ use App\Calendar;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Task;
+use Illuminate\Support\Facades\Auth;
 
 class CalendarController extends Controller
 {
     public function index()
     {
-        // Fetch tasks from the Task model
-        $tasks = Task::all()->map(function ($task) {
-            return [
-                'id' => $task->id,
-                'title' => $task->title,
-                'start' => $task->start_date,
-                'end' => $task->end_date,
-                'color' => '#808080',
-                'editable' => false,
-                'iconClass' => 'fas fa-tasks', // Default icon class for tasks
-                'type' => 'Task', // Type of event
-            ];
-        });
+        // Get the authenticated user
+        $user = Auth::user();
     
+        // Fetch tasks from the Task model where user_names JSON contains the authenticated user's username
+        $tasks = Task::whereJsonContains('user_names', [$user->username])
+                    ->get()
+                    ->map(function ($task) {
+                        return [
+                            'id' => $task->id,
+                            'title' => $task->title,
+                            'start' => $task->start_date,
+                            'end' => $task->end_date,
+                            'color' => '#808080',
+                            'editable' => false,
+                            'iconClass' => 'fas fa-tasks', // Default icon class for tasks
+                            'type' => 'Task', // Type of event
+                        ];
+                    });
+    
+                    
+                    // dd( $tasks);
         // Fetch events from the Calendar model
         $events = Calendar::all()->map(function ($event) {
             $color = null;
+            $iconClass = null;
             $type = null;
             if ($event->title == 'Test') {
                 $color = '#924ACE';
@@ -46,7 +55,7 @@ class CalendarController extends Controller
                 'end' => $event->end_date,
                 'color' => $color,
                 'editable' => true,
-                'iconClass' => $iconClass ?? null,
+                'iconClass' => $iconClass,
                 'type' => $type,
             ];
         });
@@ -56,6 +65,7 @@ class CalendarController extends Controller
     
         return view('calendar.index', ['events' => $data]);
     }
+    
 
     public function create()
     {

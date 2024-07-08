@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Bugtracking;
 use App\User;
+use App\Project;
 use App\Mail\BugAssignedNotification;
 use Illuminate\Support\Facades\Mail;
 
@@ -59,8 +60,26 @@ public function store(Request $request, $projectId)
     // Add projectId to the validated data
     $validatedData['project_id'] = $projectId;
 
+    // Fetch project name based on projectId
+    $project = Project::find($projectId);
+    $projectName = $project ? $project->proj_name : 'Unknown Project'; // Adjust as per your Project model and field names
+
     // Create new Bugtrack instance
-    $bugtrack = Bugtracking::create($validatedData);
+    $bugtrack = Bugtracking::create([
+        'title' => $validatedData['title'],
+        'description' => $validatedData['description'],
+        'severity' => $validatedData['severity'],
+        'status' => $validatedData['status'],
+        'flow' => $validatedData['flow'],
+        'expected_results' => $validatedData['expected_results'],
+        'actual_results' => $validatedData['actual_results'],
+        'assigned_to' => $validatedData['assigned_to'],
+        'reported_by' => $validatedData['reported_by'],
+        'project_id' => $validatedData['project_id'],
+    ]);
+
+    // Add project name to the $bugtrack object
+    $bugtrack->projectName = $projectName;
 
     // Send email notification to the assigned user
     if ($bugtrack->assigned_to) {
@@ -73,7 +92,6 @@ public function store(Request $request, $projectId)
     // Redirect after successful creation
     return redirect()->route('bugtrack.index', ['projectId' => $projectId]);
 }
-
 
 
 public function updateStatus(Request $request, $bugId)

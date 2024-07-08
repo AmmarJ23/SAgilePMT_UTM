@@ -75,16 +75,13 @@
 <script>
     window.addEventListener('load', () => {
         // Check for a success message in the session
-        const successMessage = "{{ session('success') }}";
-
-        if (successMessage) {
+        @if(session('success'))
             Swal.fire({
                 icon: 'success',
                 title: 'Success!',
-                text: successMessage,
+                text: "{{ session('success') }}",
             });
-        }
+        @endif
     });
 </script>
-
 @endsection

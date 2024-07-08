@@ -53,9 +53,12 @@
                                 </tbody>
                             </table>
                         </div>
-                        <a href="{{ route('bugtrack.index', ['projectId' => $projectId]) }}" class="btn btn-primary">
-                            <i class="fas fa-arrow-left"></i> Go Back
-                        </a>
+                        <br>
+                        <div class="text-center">
+                            <a href="{{ route('bugtrack.index', ['projectId' => $projectId]) }}" class="btn btn-primary">
+                                <i class="fas fa-arrow-left"></i> Go Back
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

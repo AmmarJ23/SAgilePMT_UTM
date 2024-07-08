@@ -95,6 +95,21 @@
 <!-- Font Awesome CDN for icons -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
 
+<!-- Include SweetAlert2 just before the closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    window.addEventListener('load', () => {
+        // Check for a success message in the session
+        @if(session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: "{{ session('success') }}",
+            });
+        @endif
+    });
+</script>
+
 <style>
     /* Custom CSS styles */
     .text-red-500 {

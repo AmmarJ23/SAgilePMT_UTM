@@ -13,8 +13,6 @@
     </div>
 </div>
 
-@include('inc.navbar')
-
 @endsection
 
 @section('page-script')
@@ -104,21 +102,26 @@
     }
 
     .fc-prev-button .fc-icon:before {
-        content: '\f053';
+        content: '\1F81C';
     }
 
     .fc-next-button .fc-icon:after {
-        content: '\f054';
+        content: '\2794';
     }
 
     .fc-event {
-        margin-bottom: 5px;
-        padding: 2px 5px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
+        margin-bottom: 0;
+        padding: 4px 8px;
         border-radius: 3px;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         line-height: 1.2;
+        cursor: pointer;
+        background-color: #0127fd;
+    }
+
+    /* Optional: Hover effect for events */
+    .fc-event:hover {
+        background-color: #0056b3;
     }
 </style>
 
@@ -158,6 +161,11 @@
                 });
             },
             eventClick: function(event) {
+                if (event.type === 'Task') {
+                    swal("Warning", "You cannot delete a Task event.", "warning");
+                    return false; // Prevent deletion
+                }
+
                 swal({
                     title: "Are you sure?",
                     text: "Once deleted, you will not be able to recover this event!",
@@ -192,7 +200,8 @@
             eventRender: function(event, element) {
                 var iconClass = 'fa fa-calendar';
                 element.find('.fc-content').prepend('<i class="' + iconClass + '"></i>');
-            }
+            },
+            weekMode: 'liquid', // Ensure the calendar shows only the current month's weeks
         });
     });
 </script>

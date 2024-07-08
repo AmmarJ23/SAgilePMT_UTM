@@ -11,37 +11,40 @@
         </h1>
     </header>
 
-    <!-- Main Content -->
-    <div class="d-flex flex-grow-1">
-        <!-- Left Sidebar for Create Button -->
-        <aside class="col-3 p-4 bg-light border-right">
-            <div class="mb-4">
-                <!-- Link for creating new bugtrack with project ID -->
-                <a href="{{ route('bugtrack.create', ['projectId' => $projectId]) }}" class="btn btn-primary btn-block mb-3">
-                    <i class="fas fa-bug"></i> Create Bugtrack
-                </a>
+  <!-- Main Content -->
+  <div class="d-flex flex-grow-1">
+    <!-- Left Sidebar for Create Button -->
+    <aside class="col-3 p-4 bg-light border-right">
+        <div class="mb-4">
+            <!-- Link for creating new bugtrack with project ID -->
+            <a href="{{ route('bugtrack.create', ['projectId' => $projectId]) }}" class="btn btn-primary btn-block mb-3">
+                <i class="fas fa-bug"></i> Create Bugtrack
+            </a>
 
-                <!-- Filter Form -->
-                <div class="mb-3">
-                    <label for="severity-filter" class="form-label">Filter by Severity</label>
-                    <select id="severity-filter" class="form-select mb-2">
-                        <option value="">All Severities</option>
-                        <option value="low">Low</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High</option>
-                    </select>
-                    <label for="status-filter" class="form-label">Filter by Status</label>
-                    <select id="status-filter" class="form-select mb-2">
-                        <option value="">All Statuses</option>
-                        <option value="open">Open</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                    <label for="search-bar" class="form-label">Search</label>
-                    <input type="text" id="search-bar" class="form-control" placeholder="Search...">
-                </div>
+            <!-- Filter Form -->
+            <div class="mb-4">
+                <label for="severity-filter" class="form-label">Filter by Severity</label>
+                <select id="severity-filter" class="form-select mb-2">
+                    <option value="">All Severities</option>
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                </select>
+                <label for="status-filter" class="form-label">Filter by Status</label>
+                <select id="status-filter" class="form-select mb-2">
+                    <option value="">All Statuses</option>
+                    <option value="open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Closed">Closed</option>
+                </select>
+                <label for="search-bar" class="form-label">Search</label>
+                <input type="text" id="search-bar" class="form-control" placeholder="Search...">
             </div>
-        </aside>
+        </div>
+    </aside>
+    <!-- JavaScript for filtering and searching -->
+
+
 
         <!-- Right Section for Bugtrackings -->
         <main class="col-9 pl-4 d-flex flex-column flex-grow-1">
@@ -50,6 +53,8 @@
                 Bug status updated successfully.
             </div>
 
+        <!-- Right Section for Bugtrackings -->
+        <main class="col-9 pl-4 d-flex flex-column flex-grow-1">
             <!-- Section for "Open" bugtrackings -->
             <div class="mb-4">
                 <div class="card mb-4 border-primary">
@@ -60,16 +65,32 @@
                         <div class="droppable" data-status="open">
                             @forelse($bugtracks as $bugtrack)
                                 @if($bugtrack->status === 'open')
-                                    <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                        <div class="card-body">
+                                <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div>
                                             <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
                                             <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                            <p class="text-muted">Severity: <span class="badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span></p>
-                                            <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye"></i> View Bugtrack
-                                            </a>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="far fa-calendar-alt mr-1"></i>
+                                                         <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
+                                                        <span class="text-danger">Severity:</span>
+                                                        <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </div>
+                                </div>
                                 @endif
                             @empty
                                 <p>No bugtrackings found with status "Open".</p>
@@ -89,16 +110,32 @@
                         <div class="droppable" data-status="In Progress">
                             @forelse($bugtracks as $bugtrack)
                                 @if($bugtrack->status === 'In Progress')
-                                    <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                        <div class="card-body">
+                                <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div>
                                             <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
                                             <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                            <p class="text-muted">Severity: <span class="badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span></p>
-                                            <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye"></i> View Bugtrack
-                                            </a>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="far fa-calendar-alt mr-1"></i>
+                                                         <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
+                                                        <span class="text-danger">Severity:</span>
+                                                        <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
+                                        <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                     </div>
+                                </div>
                                 @endif
                             @empty
                                 <p>No bugtrackings found with status "In Progress".</p>
@@ -119,12 +156,28 @@
                             @forelse($bugtracks as $bugtrack)
                                 @if($bugtrack->status === 'Closed')
                                     <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                        <div class="card-body">
-                                            <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
-                                            <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                            <p class="text-muted">Severity: <span class="badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span></p>
-                                            <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="btn btn-primary btn-sm">
-                                                <i class="fas fa-eye"></i> View Bugtrack
+                                        <div class="card-body d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
+                                                <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                                <div class="row">
+                                                    <div class="col-sm-6">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="far fa-calendar-alt mr-1"></i>
+                                                             <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-6">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
+                                                            <span class="text-danger">Severity:</span>
+                                                            <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                                <i class="fas fa-eye"></i>
                                             </a>
                                         </div>
                                     </div>
@@ -149,30 +202,6 @@
         const bugtrackCards = document.querySelectorAll('.bugtrack-card');
 
         bugtrackCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const bugId = card.dataset.id;
-
-                // Fetch detailed information about the bugtrack item
-                fetch(`/bugtrack/${bugId}/details`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Display the detailed information in the sidebar
-                        const sidebar = document.querySelector('#bugtrack-details-sidebar');
-                        sidebar.innerHTML = `
-                            <h3 class="h5 font-weight-bold mb-2">${data.title}</h3>
-                            <p class="text-muted mb-4">${data.description}</p>
-                            <p class="text-muted">Assigned to: ${data.assigned_to}</p>
-                            <!-- Add more fields here as needed -->
-                        `;
-
-                        // Show the sidebar
-                        sidebar.classList.remove('d-none');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
-            });
-
             card.addEventListener('dragstart', () => {
                 card.classList.add('dragging');
             });
@@ -201,21 +230,23 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     },
-                    body: JSON.stringify({ status: status })
+                    body: JSON.stringify({ status })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+                .then(response => {
+                    if (response.ok) {
+                        // Move the card to the new column
                         droppable.appendChild(draggable);
-                        // Show success message
-                        const successMessage = document.getElementById('successMessage');
-                        successMessage.classList.remove('d-none');
-                        // Hide success message after 3 seconds
-                        setTimeout(() => {
-                            successMessage.classList.add('d-none');
-                        }, 3000);
+                        
+                        // Display SweetAlert success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Status Updated',
+                            text: `Bugtrack status has been updated to "${status}"`,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
                     } else {
-                        console.error('Failed to update bug status.');
+                        console.error('Failed to update status');
                     }
                 })
                 .catch(error => {
@@ -223,38 +254,42 @@
                 });
             });
         });
-
-        // Filter and search functionality
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
         const severityFilter = document.getElementById('severity-filter');
         const statusFilter = document.getElementById('status-filter');
         const searchBar = document.getElementById('search-bar');
+        const bugtrackCards = document.querySelectorAll('.bugtrack-card');
 
-        function filterAndSearch() {
-            const severity = severityFilter.value.toLowerCase();
-            const status = statusFilter.value.toLowerCase();
-            const search = searchBar.value.toLowerCase();
+        // Event listeners for filters
+        severityFilter.addEventListener('change', filterBugtracks);
+        statusFilter.addEventListener('change', filterBugtracks);
+        searchBar.addEventListener('input', filterBugtracks);
+
+        function filterBugtracks() {
+            const severityValue = severityFilter.value.toLowerCase();
+            const statusValue = statusFilter.value.toLowerCase();
+            const searchValue = searchBar.value.trim().toLowerCase();
 
             bugtrackCards.forEach(card => {
-                const cardSeverity = card.querySelector('.badge').textContent.toLowerCase();
-                const cardStatus = card.closest('.droppable').dataset.status.toLowerCase();
-                const cardTitle = card.querySelector('h3').textContent.toLowerCase();
-                const cardDescription = card.querySelector('p').textContent.toLowerCase();
+                const severity = card.querySelector('.badge').textContent.toLowerCase();
+                const status = card.closest('.droppable').dataset.status.toLowerCase();
+                const title = card.querySelector('.font-weight-bold').textContent.toLowerCase();
+                const description = card.querySelector('.text-muted').textContent.toLowerCase();
 
-                const matchesSeverity = severity === '' || cardSeverity === severity;
-                const matchesStatus = status === '' || cardStatus === status;
-                const matchesSearch = search === '' || cardTitle.includes(search) || cardDescription.includes(search);
+                const matchesSeverity = severityValue === '' || severity.includes(severityValue);
+                const matchesStatus = statusValue === '' || status.includes(statusValue);
+                const matchesSearch = title.includes(searchValue) || description.includes(searchValue);
 
                 if (matchesSeverity && matchesStatus && matchesSearch) {
-                    card.style.display = '';
+                    card.style.display = 'block';
                 } else {
                     card.style.display = 'none';
                 }
             });
         }
-
-        severityFilter.addEventListener('change', filterAndSearch);
-        statusFilter.addEventListener('change', filterAndSearch);
-        searchBar.addEventListener('input', filterAndSearch);
     });
 </script>
 @endsection
