@@ -55,7 +55,7 @@
             <div class="card mb-4">
                 <div class="card-body">
                     <h3 class="h5">Announcements</h3>
-                    <p>Stay updated with the latest forum announcements and news.</p>
+                    <p><strong>Note:</strong> Neither forums nor comments are editable or deletable. Please post seriously and thoughtfully.</p>
                 </div>
             </div>
         </aside>
