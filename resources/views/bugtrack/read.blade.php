@@ -23,6 +23,10 @@
                                         <td>{{ $bugtrack->description }}</td>
                                     </tr>
                                     <tr>
+                                        <th class="bg-light">Status</th>
+                                        <td> <strong> {{ $bugtrack->status }} </strong> </td>
+                                    </tr>
+                                    <tr>
                                         <th class="bg-light">Severity</th>
                                         <td>{{ ucfirst($bugtrack->severity) }}</td>
                                     </tr>

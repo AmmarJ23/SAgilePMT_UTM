@@ -15,7 +15,9 @@ class BugtrackingController extends Controller
     public function index(Request $request, $projectId)
 {
     // Fetch all bugtrackings for the specified project from the database
-    $bugtracks = Bugtracking::where('project_id', $projectId)->get();
+    $bugtracks = Bugtracking::where('project_id', $projectId)
+    ->orderBy('created_at', 'desc') // Sort by date created
+    ->get();
 
     // Get unique statuses from bugtrackings
     $statuses = $bugtracks->unique('status')->pluck('status');
