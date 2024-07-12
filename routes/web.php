@@ -397,3 +397,7 @@ Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])
 Route::get('/auth/login', [LoginController::class, 'index'])->name('auth-login');
 Route::post('/register', 'Auth\RegisterController@register')->name('register');
 Route::get('/auth/forgot-password', [ForgotPasswordController::class, 'index'])->name('auth-reset-password');
+
+
+
+Route::get('/bugtrack/testing/yestesting', 'BugtrackingController@calculateBugScore');

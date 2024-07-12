@@ -11,6 +11,7 @@ use App\Mail\BugDueSoonNotification;
 use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use App\Bugscore;
 
 class BugtrackingController extends Controller
 {
@@ -173,7 +174,106 @@ public function updateStatus(Request $request, $bugId)
         return redirect()->route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrackId])
                          ->with('success', 'Notification sent successfully.');
     }
+
+    public function updateWeights(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'severity_weight' => 'required|numeric|min:0|max:1',
+            'status_weight' => 'required|numeric|min:0|max:1',
+            'due_weight' => 'required|numeric|min:0|max:1',
+        ]);
+
+        // Update or create the weights record
+        Bugscore::updateOrCreate(
+            ['id' => 1], // Assuming a single record for weights
+            [
+                'severity_weight' => $request->severity_weight,
+                'status_weight' => $request->status_weight,
+                'due_weight' => $request->due_weight
+            ]
+        );
+
+        // Return a JSON response indicating success
+        return response()->json(['success' => true]);
+    }
+    public function calculateBugScore()
+    {
+        // Fetch all bugtracks that don't have a status of 'Closed'
+        $bugtracks = Bugtracking::where('status', '!=', 'Closed')->get();
     
+        // Define scoring for severity
+        $severityScores = [
+            'low' => 1,
+            'medium' => 2,
+            'high' => 3
+        ];
+    
+        // Define scoring for status
+        $statusScores = [
+            'open' => 1,
+            'In Progress' => 2
+        ];
+    
+        // Fetch dynamic weights from the database
+        $weights = Bugscore::latest()->first();
+    
+        // Default weights if no weights are set
+        $weights = $weights ?: (object)[
+            'severity_weight' => 0.4,
+            'status_weight' => 0.3,
+            'due_weight' => 0.3
+        ];
+    
+        $today = time();
+    
+        // Array to hold scores for all bugtracks
+        $results = [];
+    
+        foreach ($bugtracks as $bugtrack) {
+            // Calculate due date score
+            $dueDateScore = 0;
+    
+            if ($bugtrack->due_date) {
+                $dueDate = strtotime($bugtrack->due_date);
+                $daysUntilDue = ($dueDate - $today) / (60 * 60 * 24);
+    
+                $dueDateScore = $daysUntilDue <= 3 ? 3 :
+                                ($daysUntilDue > 3 && $daysUntilDue <= 10 ? 2 : 1);
+            } else {
+                // Default due date score if due_date is null
+                $dueDateScore = 1; // Adjust this default value if needed
+            }
+    
+            // Assign scores based on the properties
+            $severityScore = $severityScores[strtolower($bugtrack->severity)] ?? 0;
+            $statusScore = $statusScores[$bugtrack->status] ?? 0;
+    
+            // Calculate total score based on weights
+            $totalScore = ($severityScore * $weights->severity_weight) +
+                          ($statusScore * $weights->status_weight) +
+                          ($dueDateScore * $weights->due_weight);
+    
+            // Add the result to the array
+            $results[] = [
+                'id' => $bugtrack->id,
+                'severity' => $bugtrack->severity,
+                'severity_score' => $severityScore,
+                'status' => $bugtrack->status,
+                'status_score' => $statusScore,
+                'due_date' => $bugtrack->due_date,
+                'due_date_score' => $dueDateScore,
+                'total_score' => $totalScore
+            ];
+        }
+    
+         // Sort results by total score in descending order
+    usort($results, function ($a, $b) {
+        return $b['total_score'] <=> $a['total_score'];
+    });
+        // Return the results for debugging
+        dd($results);
+    }
     
 
 }
