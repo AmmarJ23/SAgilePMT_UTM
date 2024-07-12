@@ -45,6 +45,10 @@
                     <option value="pending">Pending</option>
                 </select>
             </div>
+            <div class="mb-6">
+            <label for="due_date" class="block text-gray-700 text-lg font-semibold mb-2">Due Date</label>
+            <input type="date" id="due_date" name="due_date" class="form-input" placeholder="Select due date">
+        </div>
         </div>
         <!-- Flow -->
         <div class="mb-6">

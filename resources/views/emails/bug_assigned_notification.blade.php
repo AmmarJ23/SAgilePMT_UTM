@@ -18,6 +18,10 @@ A new bugtrack has been assigned to you for project <strong> {{ $bugtrack->proje
                 <th style="width: 30%; border: 1px solid #007bff; padding: 8px;" scope="row">Description</th>
                 <td style="border: 1px solid #007bff; padding: 8px;">{{ $bugtrack->description }}</td>
             </tr>
+            <tr>
+                <th style="width: 30%; border: 1px solid #007bff; padding: 8px;" scope="row">Due Date</th>
+                <td style="border: 1px solid #007bff; padding: 8px;">{{ $bugtrack->due_date }}</td>
+            </tr>
             <tr style="background-color: #f8f9fa;">
                 <th style="width: 30%; border: 1px solid #007bff; padding: 8px;" scope="row">Severity</th>
                 <td style="border: 1px solid #007bff; padding: 8px;">{{ $bugtrack->severity }}</td>

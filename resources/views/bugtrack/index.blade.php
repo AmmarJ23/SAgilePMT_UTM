@@ -362,14 +362,14 @@
     }
 
     /* Droppable Area */
-    .droppable {
+    /* .droppable {
         min-height: 100px;
         /* Adjust as needed */
         border: 2px dashed #ccc;
         margin-bottom: 10px;
         padding: 10px;
         background-color: #f9f9f9;
-    }
+    } */
 
     /* Bugtrack Details Sidebar */
     #bugtrack-details-sidebar {

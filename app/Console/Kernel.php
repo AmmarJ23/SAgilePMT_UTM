@@ -10,6 +10,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\BugtrackingController; 
 
 class Kernel extends ConsoleKernel
 {
@@ -48,6 +49,10 @@ class Kernel extends ConsoleKernel
         foreach ($events as $event) {
             Notification::route('mail', 'user@example.com')->notify(new ReminderEmailNotification($event));
         }
+    })->daily();
+
+    $schedule->call(function () {
+        app(BugtrackingController::class)->notifyDueSoon();
     })->daily();
 }
 

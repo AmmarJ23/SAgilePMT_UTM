@@ -358,6 +358,8 @@ Route::get('/bugtrack/create/{projectId?}', 'BugtrackingController@create')->nam
 Route::post('/bugtrack/{projectId}', 'BugtrackingController@store')->name('bugtrack.store');
 Route::put('/bugtrack/{bugId}/update-status', 'BugtrackingController@updateStatus')->name('bugtrack.update_status');
 Route::get('/bugtrack/{projectId}/{bugtrackId}/view', 'BugtrackingController@view')->name('bugtrack.view');
+Route::get('/bugtrack/{projectId}/{bugtrackId}/view/report', 'BugtrackingController@generateReport')->name('bugtrack.generate');
+Route::get('/bugtrack/{projectId}/{bugtrackId}/view/notify', 'BugtrackingController@notify')->name('bugtrack.notify');
 
 
 // Route for Forum

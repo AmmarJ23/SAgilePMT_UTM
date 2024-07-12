@@ -23,8 +23,12 @@
                                         <td>{{ $bugtrack->description }}</td>
                                     </tr>
                                     <tr>
+                                        <th class="bg-light">Due Date</th>
+                                        <td>{{ $bugtrack->due_date }}</td>
+                                    </tr>
+                                    <tr>
                                         <th class="bg-light">Status</th>
-                                        <td> <strong> {{ $bugtrack->status }} </strong> </td>
+                                        <td><strong>{{ $bugtrack->status }}</strong></td>
                                     </tr>
                                     <tr>
                                         <th class="bg-light">Severity</th>
@@ -61,6 +65,12 @@
                         <div class="text-center">
                             <a href="{{ route('bugtrack.index', ['projectId' => $projectId]) }}" class="btn btn-primary">
                                 <i class="fas fa-arrow-left"></i> Go Back
+                            </a>
+                            <a href="{{ route('bugtrack.notify', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="btn btn-warning">
+                                <i class="fas fa-envelope"></i> Notify User
+                            </a>
+                            <a href="{{ route('bugtrack.generate', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="btn btn-success">
+                                <i class="fas fa-file-alt"></i> Generate Report
                             </a>
                         </div>
                     </div>
@@ -104,5 +114,25 @@
     .btn-primary:hover {
         background-color: #0056b3;
         border-color: #0056b3;
+    }
+
+    .btn-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+    }
+
+    .btn-warning:hover {
+        background-color: #e0a800;
+        border-color: #d39e00;
+    }
+
+    .btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-success:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
     }
 </style>

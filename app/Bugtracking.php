@@ -18,7 +18,8 @@ class Bugtracking extends Model
         'expected_results',
         'actual_results',
         'assigned_to',
-        'reported_by'
+        'reported_by',
+        'due_date'
     ];
 // Define relationships
 public function assignee()

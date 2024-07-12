@@ -7,7 +7,10 @@ use App\Bugtracking;
 use App\User;
 use App\Project;
 use App\Mail\BugAssignedNotification;
+use App\Mail\BugDueSoonNotification;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 
 class BugtrackingController extends Controller
 {
@@ -54,6 +57,7 @@ public function store(Request $request, $projectId)
         'expected_results' => 'nullable|string',
         'actual_results' => 'nullable|string',
         'assigned_to' => 'nullable|integer',
+        'due_date' => 'nullable|date', // Add validation rule for due_date
     ]);
 
     // Set the reported_by field to the authenticated user's ID
@@ -78,6 +82,7 @@ public function store(Request $request, $projectId)
         'assigned_to' => $validatedData['assigned_to'],
         'reported_by' => $validatedData['reported_by'],
         'project_id' => $validatedData['project_id'],
+        'due_date' => $validatedData['due_date'], 
     ]);
 
     // Add project name to the $bugtrack object
@@ -90,10 +95,10 @@ public function store(Request $request, $projectId)
             Mail::to($assignedUser->email)->send(new BugAssignedNotification($bugtrack));
         }
     }
-
     // Redirect after successful creation
     return redirect()->route('bugtrack.index', ['projectId' => $projectId]);
 }
+
 
 
 public function updateStatus(Request $request, $bugId)
@@ -131,6 +136,42 @@ public function updateStatus(Request $request, $bugId)
             'projectId' => $projectId,
             'bugtrack' => $bugtrack,
         ]);
+    }
+
+    public function generateReport($projectId, $bugtrackId)
+    {
+         // Fetch project name based on projectId
+        $project = Project::find($projectId);
+        $projectName = $project ? $project->proj_name : 'Unknown Project'; 
+        $bugtrack = Bugtracking::findOrFail($bugtrackId);
+
+        // Add project name to the $bugtrack object
+        $bugtrack->projectName = $projectName;
+
+        $pdf = Pdf::loadView('reports.bugtrack', compact('bugtrack'));
+
+        return $pdf->download('bugtrack_report_' . $bugtrack->id . '.pdf');
+    }
+    
+    public function notify($projectId, $bugtrackId)
+    {
+        // Fetch the bugtrack and project details
+        $bugtrack = Bugtracking::findOrFail($bugtrackId);
+        $project = Project::find($projectId);
+        $projectName = $project ? $project->proj_name : 'Unknown Project'; 
+    
+        // Add project name to the $bugtrack object
+        $bugtrack->projectName = $projectName;
+        $assignedUser = $bugtrack->assignee;
+    
+        // Send notification email to the assigned user
+        if ($assignedUser) {
+            Mail::to($assignedUser->email)->send(new BugDueSoonNotification($bugtrack));
+        }
+    
+        // Redirect with a success message
+        return redirect()->route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrackId])
+                         ->with('success', 'Notification sent successfully.');
     }
     
     
