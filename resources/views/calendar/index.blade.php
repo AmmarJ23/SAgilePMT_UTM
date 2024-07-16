@@ -30,6 +30,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="markCompleteBtn">Mark Complete</button>
                 <button type="button" class="btn btn-danger" id="deleteCalendarEventBtn">Delete</button>
             </div>
         </div>
@@ -259,6 +260,11 @@
                     });
                 }
             },
+
+
+
+
+
             selectAllow: function(event) {
                 return event.start.isSame(event.end, 'day');
             },

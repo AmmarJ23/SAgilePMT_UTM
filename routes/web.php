@@ -406,6 +406,8 @@ Route::get('/bugtrack/createScore/{projectId}', 'BugtrackingController@createSco
 Route::post('/comments/{comment_id}/update', 'CommentController@update')->name('comments.update');
 Route::post('/comments/{comment_id}/delete', 'CommentController@delete')->name('comments.delete');
 Route::post('/comments/{comment_id}/reply', 'CommentController@replyToComment')->name('comments.reply');
+Route::post('/calendar/status-update', 'CalendarController@statusUpdate')->name('calendar.statusUpdate');
+
 
 
 
