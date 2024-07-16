@@ -12,23 +12,108 @@ use Illuminate\Support\Facades\Mail;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Bugscore;
+use Illuminate\Support\Facades\Log;
+use App\Comment;
+use Illuminate\Support\Facades\Auth;
 
 class BugtrackingController extends Controller
 {
 
     public function index(Request $request, $projectId)
 {
-    // Fetch all bugtrackings for the specified project from the database
     $bugtracks = Bugtracking::where('project_id', $projectId)
-    ->orderBy('created_at', 'desc') // Sort by date created
+    ->orderBy('created_at', 'desc')
     ->get();
+
+    // Fetch only non-closed bugtrackings and order them by creation date
+    $bugtracksresults = Bugtracking::where('project_id', $projectId)
+        ->where('status', '!=', 'Closed')
+        ->orderBy('created_at', 'desc') // Sort by date created
+        ->get();
+
+    // Define scoring for severity
+    $severityScores = [
+        'low' => 1,
+        'medium' => 2,
+        'high' => 3
+    ];
+
+    // Define scoring for status
+    $statusScores = [
+        'open' => 1,
+        'In Progress' => 2
+    ];
+
+    // Fetch dynamic weights from the database
+    $weights = Bugscore::latest()->first();
+
+    // Fetch dynamic weights from the database
+    $weights = Bugscore::latest()->first();
+
+    // Default weights if no weights are set
+    $weights = $weights ?: (object)[
+        'severity_weight' => 0.4,
+        'status_weight' => 0.3,
+        'due_weight' => 0.3
+    ];
+
+    $today = time();
+
+    // Array to hold scores for all bugtracks
+    $results = [];
+
+    foreach ($bugtracksresults as $bugtrack) {
+        // Calculate due date score
+        $dueDateScore = 0;
+
+        if ($bugtrack->due_date) {
+            $dueDate = strtotime($bugtrack->due_date);
+            $daysUntilDue = ($dueDate - $today) / (60 * 60 * 24);
+
+            $dueDateScore = $daysUntilDue <= 3 ? 3 :
+                            ($daysUntilDue > 3 && $daysUntilDue <= 10 ? 2 : 1);
+        } else {
+            // Default due date score if due_date is null
+            $dueDateScore = 1; // Adjust this default value if needed
+        }
+
+        // Assign scores based on the properties
+        $severityScore = $severityScores[strtolower($bugtrack->severity)] ?? 0;
+        $statusScore = $statusScores[$bugtrack->status] ?? 0;
+
+        // Calculate total score based on weights
+        $totalScore = ($severityScore * $weights->severity_weight) +
+                      ($statusScore * $weights->status_weight) +
+                      ($dueDateScore * $weights->due_weight);
+
+        // Add the result to the array
+        $results[] = [
+            'id' => $bugtrack->id,
+            'title' => $bugtrack->title,
+            'severity' => $bugtrack->severity,
+            'severity_score' => $severityScore,
+            'status' => $bugtrack->status,
+            'status_score' => $statusScore,
+            'due_date' => $bugtrack->due_date,
+            'due_date_score' => $dueDateScore,
+            'total_score' => $totalScore
+        ];
+    }
+
+    // Sort results by total score in descending order
+    usort($results, function ($a, $b) {
+        return $b['total_score'] <=> $a['total_score'];
+    });
 
     // Get unique statuses from bugtrackings
     $statuses = $bugtracks->unique('status')->pluck('status');
 
-    // Return the view with bugtracks data, statuses, and projectId
-    return view('bugtrack.index', compact('bugtracks', 'statuses', 'projectId'));
+    // Return the view with bugtracks data, statuses, projectId, and results
+    return view('bugtrack.index', compact('bugtracks', 'statuses', 'projectId', 'results'));
 }
+
+    
+    
 
 
 
@@ -170,110 +255,99 @@ public function updateStatus(Request $request, $bugId)
             Mail::to($assignedUser->email)->send(new BugDueSoonNotification($bugtrack));
         }
     
+        
         // Redirect with a success message
         return redirect()->route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrackId])
                          ->with('success', 'Notification sent successfully.');
     }
 
-    public function updateWeights(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'severity_weight' => 'required|numeric|min:0|max:1',
-            'status_weight' => 'required|numeric|min:0|max:1',
-            'due_weight' => 'required|numeric|min:0|max:1',
-        ]);
+   // app/Http/Controllers/BugtrackingController.php
+ public function createScore($projectId)
+{
+    try {
+        $weights = Bugscore::where('project_id', $projectId)->first();
 
-        // Update or create the weights record
-        Bugscore::updateOrCreate(
-            ['id' => 1], // Assuming a single record for weights
-            [
-                'severity_weight' => $request->severity_weight,
-                'status_weight' => $request->status_weight,
-                'due_weight' => $request->due_weight
-            ]
-        );
-
-        // Return a JSON response indicating success
-        return response()->json(['success' => true]);
-    }
-    public function calculateBugScore()
-    {
-        // Fetch all bugtracks that don't have a status of 'Closed'
-        $bugtracks = Bugtracking::where('status', '!=', 'Closed')->get();
-    
-        // Define scoring for severity
-        $severityScores = [
-            'low' => 1,
-            'medium' => 2,
-            'high' => 3
-        ];
-    
-        // Define scoring for status
-        $statusScores = [
-            'open' => 1,
-            'In Progress' => 2
-        ];
-    
-        // Fetch dynamic weights from the database
-        $weights = Bugscore::latest()->first();
-    
-        // Default weights if no weights are set
-        $weights = $weights ?: (object)[
-            'severity_weight' => 0.4,
-            'status_weight' => 0.3,
-            'due_weight' => 0.3
-        ];
-    
-        $today = time();
-    
-        // Array to hold scores for all bugtracks
-        $results = [];
-    
-        foreach ($bugtracks as $bugtrack) {
-            // Calculate due date score
-            $dueDateScore = 0;
-    
-            if ($bugtrack->due_date) {
-                $dueDate = strtotime($bugtrack->due_date);
-                $daysUntilDue = ($dueDate - $today) / (60 * 60 * 24);
-    
-                $dueDateScore = $daysUntilDue <= 3 ? 3 :
-                                ($daysUntilDue > 3 && $daysUntilDue <= 10 ? 2 : 1);
-            } else {
-                // Default due date score if due_date is null
-                $dueDateScore = 1; // Adjust this default value if needed
-            }
-    
-            // Assign scores based on the properties
-            $severityScore = $severityScores[strtolower($bugtrack->severity)] ?? 0;
-            $statusScore = $statusScores[$bugtrack->status] ?? 0;
-    
-            // Calculate total score based on weights
-            $totalScore = ($severityScore * $weights->severity_weight) +
-                          ($statusScore * $weights->status_weight) +
-                          ($dueDateScore * $weights->due_weight);
-    
-            // Add the result to the array
-            $results[] = [
-                'id' => $bugtrack->id,
-                'severity' => $bugtrack->severity,
-                'severity_score' => $severityScore,
-                'status' => $bugtrack->status,
-                'status_score' => $statusScore,
-                'due_date' => $bugtrack->due_date,
-                'due_date_score' => $dueDateScore,
-                'total_score' => $totalScore
+        if (!$weights) {
+            $weights = (object) [
+                'severity_weight' => 0.4,
+                'status_weight' => 0.3,
+                'due_weight' => 0.3,
             ];
         }
-    
-         // Sort results by total score in descending order
-    usort($results, function ($a, $b) {
-        return $b['total_score'] <=> $a['total_score'];
-    });
-        // Return the results for debugging
-        dd($results);
+
+        return view('bugtrack.suggestedtoolmetric', compact('projectId', 'weights'));
+    } catch (\Exception $e) {
+        Log::error('Error in createScore method: ' . $e->getMessage());
+        return response()->view('errors.500', [], 500);
     }
-    
+}
+
+   
+
+
+   
+
+public function updateScore(Request $request, $projectId)
+{
+    // Validate incoming request data
+    $validatedData = $request->validate([
+        'severity_weight' => ['required', 'numeric', 'min:0'],
+        'status_weight' => ['required', 'numeric', 'min:0'],
+        'due_weight' => ['required', 'numeric', 'min:0'],
+    ]);
+
+    // Fetch or create a Bugscore model instance for the given projectId
+    $weights = Bugscore::where('project_id', $projectId)->first();
+    if (!$weights) {
+        $weights = new Bugscore();
+        $weights->project_id = $projectId;
+    }
+
+    // Update weights with validated data
+    $weights->severity_weight = $validatedData['severity_weight'];
+    $weights->status_weight = $validatedData['status_weight'];
+    $weights->due_weight = $validatedData['due_weight'];
+
+    // Save the updated or new weights
+    $weights->save();
+
+    // Redirect back to the createScore page with the projectId
+    return redirect()->route('bugtrack.createScore', ['projectId' => $projectId])->with('success', 'Suggestion tool metrics updated successfully.');
+}
+
+public function updateComment(Request $request, $commentId)
+{
+    $request->validate([
+        'content' => 'required'
+    ]);
+
+    $comment = Comment::findOrFail($commentId);
+
+    if ($comment->user_id !== Auth::id()) {
+        return response()->json(['success' => false, 'message' => 'You are not authorized to update this comment.']);
+    }
+
+    $comment->update([
+        'content' => $request->input('content')
+    ]);
+
+    return response()->json(['success' => true, 'message' => 'Comment updated successfully.']);
+}
+
+public function deleteComment($commentId)
+{
+    $comment = Comment::findOrFail($commentId);
+
+    if ($comment->user_id !== Auth::id()) {
+        return response()->json(['success' => false, 'message' => 'You are not authorized to delete this comment.']);
+    }
+
+    $comment->delete();
+
+    return response()->json(['success' => true, 'message' => 'Comment deleted successfully.']);
+}
 
 }
+
+    
+

@@ -136,3 +136,21 @@
         border-color: #1e7e34;
     }
 </style>
+@section('page-script')
+    @parent
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.addEventListener('load', () => {
+            // Check for a success message in the session
+            const successMessage = "{{ session('success') }}";
+
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: successMessage,
+                });
+            }
+        });
+    </script>
+@endsection

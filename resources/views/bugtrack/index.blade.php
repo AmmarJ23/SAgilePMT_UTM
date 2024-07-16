@@ -22,6 +22,7 @@
             </a>
 
             <!-- Filter Form -->
+            <!-- Filter Form -->
             <div class="mb-4">
                 <label for="severity-filter" class="form-label">Filter by Severity</label>
                 <select id="severity-filter" class="form-select mb-2">
@@ -40,6 +41,29 @@
                 <label for="search-bar" class="form-label">Search</label>
                 <input type="text" id="search-bar" class="form-control" placeholder="Search...">
             </div>
+
+            <div class="button-container">
+                <button id="sort-by-suggested" class="btn btn-info btn-equal mb-3">
+                    Show Suggested
+                </button>
+            
+                <button id="show-all" class="btn btn-secondary btn-equal mb-3">
+                    Show All
+                </button>
+            
+                @auth
+                    @if(auth()->user()->role == 'admin' || auth()->user()->name == 'jeevan')
+                        <a href="{{ route('bugtrack.createScore', ['projectId' => $projectId]) }}" class="btn btn-warning btn-equal mb-3">
+                            <i class="fas fa-tools"></i> Update Weightage Suggested Tool
+                        </a>
+                    @endif
+                @endauth
+            </div>
+            
+        
+        
+        
+
         </div>
     </aside>
     <!-- JavaScript for filtering and searching -->
@@ -53,145 +77,288 @@
                 Bug status updated successfully.
             </div>
 
-        <!-- Right Section for Bugtrackings -->
-        <main class="col-9 pl-4 d-flex flex-column flex-grow-1">
-            <!-- Section for "Open" bugtrackings -->
-            <div class="mb-4">
-                <div class="card mb-4 border-primary">
-                    <div class="card-header bg-primary text-white">
-                        <h2 class="h4 font-weight-bold mb-0">Open</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="droppable" data-status="open">
-                            @forelse($bugtracks as $bugtrack)
-                                @if($bugtrack->status === 'open')
-                                <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                    <div class="card-body d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
-                                            <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="far fa-calendar-alt mr-1"></i>
-                                                         <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
-                                                        <span class="text-danger">Severity:</span>
-                                                        <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
-                                                    </div>
-                                                </div>
+<!-- Right Section for Bugtrackings -->
+<main id="bugtrackings-section" class="col-9 pl-4 d-flex flex-column flex-grow-1">
+    <!-- Section for "Open" bugtrackings -->
+    <div id="open-bugtrackings" class="mb-4">
+        <div class="card mb-4 border-primary">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 font-weight-bold mb-0">Open</h2>
+            </div>
+            <div class="card-body">
+                <div class="droppable" data-status="open">
+                    @forelse($bugtracks as $bugtrack)
+                        @if($bugtrack->status === 'open')
+                        <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
+                                    <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="label-container">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                            </div>
+                                            <div class="label-container">
+                                                <i class="far fa-calendar-check"></i>
+                                                <span>Due Date: {{ $bugtrack->due_date }}</span>
                                             </div>
                                         </div>
-                                        <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        <div class="col-sm-6">
+                                            <div class="label-container">
+                                                <i class="fas fa-exclamation-circle text-danger"></i>
+                                                <span class="text-danger">Severity:</span>
+                                                <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                            </div>
+                                            <div class="label-container">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Status: {{ ucfirst($bugtrack->status) }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                @endif
-                            @empty
-                                <p>No bugtrackings found with status "Open".</p>
-                            @endforelse
+                                <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                        @endif
+                    @empty
+                        <p>No bugtrackings found with status "Open".</p>
+                    @endforelse
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Section for "In Progress" bugtrackings -->
-            <div class="mb-4">
-                <div class="card mb-4 border-warning">
-                    <div class="card-header bg-warning text-dark">
-                        <h2 class="h4 font-weight-bold mb-0">In Progress</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="droppable" data-status="In Progress">
-                            @forelse($bugtracks as $bugtrack)
-                                @if($bugtrack->status === 'In Progress')
-                                <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                    <div class="card-body d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
-                                            <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                            <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="far fa-calendar-alt mr-1"></i>
-                                                         <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
-                                                        <span class="text-danger">Severity:</span>
-                                                        <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
-                                                    </div>
-                                                </div>
+    <!-- Section for "In Progress" bugtrackings -->
+    <div id="in-progress-bugtrackings" class="mb-4">
+        <div class="card mb-4 border-warning">
+            <div class="card-header bg-warning text-dark">
+                <h2 class="h4 font-weight-bold mb-0">In Progress</h2>
+            </div>
+            <div class="card-body">
+                <div class="droppable" data-status="In Progress">
+                    @forelse($bugtracks as $bugtrack)
+                        @if($bugtrack->status === 'In Progress')
+                        <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
+                                    <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div class="label-container">
+                                                <i class="far fa-calendar-alt"></i>
+                                                <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                            </div>
+                                            <div class="label-container">
+                                                <i class="far fa-calendar-check"></i>
+                                                <span>Due Date: {{ $bugtrack->due_date }}</span>
                                             </div>
                                         </div>
-                                        <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
+                                        <div class="col-sm-6">
+                                            <div class="label-container">
+                                                <i class="fas fa-exclamation-circle text-danger"></i>
+                                                <span class="text-danger">Severity:</span>
+                                                <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                            </div>
+                                            <div class="label-container">
+                                                <i class="fas fa-info-circle"></i>
+                                                <span>Status: {{ ucfirst($bugtrack->status) }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                @endif
-                            @empty
-                                <p>No bugtrackings found with status "In Progress".</p>
-                            @endforelse
+                                <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                        @endif
+                    @empty
+                        <p>No bugtrackings found with status "In Progress".</p>
+                    @endforelse
                 </div>
             </div>
+        </div>
+    </div>
 
-            <!-- Section for "Closed" bugtrackings -->
-            <div class="mb-4">
-                <div class="card mb-4 border-success">
-                    <div class="card-header bg-success text-white">
-                        <h2 class="h4 font-weight-bold mb-0">Closed</h2>
-                    </div>
-                    <div class="card-body">
-                        <div class="droppable" data-status="Closed">
-                            @forelse($bugtracks as $bugtrack)
-                                @if($bugtrack->status === 'Closed')
-                                    <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
-                                        <div class="card-body d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
-                                                <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
-                                                <div class="row">
-                                                    <div class="col-sm-6">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="far fa-calendar-alt mr-1"></i>
-                                                             <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-sm-6">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="fas fa-exclamation-circle mr-2 text-danger"></i>
-                                                            <span class="text-danger">Severity:</span>
-                                                            <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
-                                                        </div>
-                                                    </div>
+    
+
+    <!-- Section for "Closed" bugtrackings -->
+    <div id="closed-bugtrackings" class="mb-4">
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white">
+                <h2 class="h4 font-weight-bold mb-0">Closed</h2>
+            </div>
+            <div class="card-body">
+                <div class="droppable" data-status="Closed">
+                    @forelse($bugtracks as $bugtrack)
+                        @if($bugtrack->status === 'Closed')
+                            <div class="bugtrack-card card mb-4 draggable" data-id="{{ $bugtrack->id }}" draggable="true">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h3 class="h5 font-weight-bold">{{ $bugtrack->title }}</h3>
+                                        <p class="text-muted">{{ \Illuminate\Support\Str::limit($bugtrack->description, 150) }}</p>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <div class="label-container">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    <span>{{ $bugtrack->created_at->format('F j, Y') }}</span>
+                                                </div>
+                                                <div class="label-container">
+                                                    <i class="far fa-calendar-check"></i>
+                                                    <span>Due Date: {{ $bugtrack->due_date }}</span>
                                                 </div>
                                             </div>
-                                            <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
+                                            <div class="col-sm-6">
+                                                <div class="label-container">
+                                                    <i class="fas fa-exclamation-circle text-danger"></i>
+                                                    <span class="text-danger">Severity:</span>
+                                                    <span class="ml-2 badge badge-{{ $bugtrack->severity }}">{{ ucfirst($bugtrack->severity) }}</span>
+                                                </div>
+                                                <div class="label-container">
+                                                    <i class="fas fa-info-circle"></i>
+                                                    <span>Status: {{ ucfirst($bugtrack->status) }}</span>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                @endif
-                            @empty
-                                <p>No bugtrackings found with status "Closed".</p>
-                            @endforelse
-                        </div>
-                    </div>
+                                    <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack->id]) }}" class="eye-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+                    @empty
+                        <p>No bugtrackings found with status "Closed".</p>
+                    @endforelse
                 </div>
             </div>
-        </main>
+        </div>
+    </div>
+</main>
+
+<
+<!-- Section for "Suggested Bug Tracks" -->
+<div id="suggested-bug-tracks" class="mb-4">
+    <div class="card mb-4 border-info">
+        <div class="card-header bg-info text-white">
+            <h2 class="h4 font-weight-bold mb-0">Suggested Bug Tracks To Focus On</h2>
+        </div>
+        <div class="card-body">
+            <div class="droppable" data-status="Suggested">
+                @if(empty($results))
+                    <p>No suggested bug tracks available.</p>
+                @else
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Severity</th>
+                                <th>Severity Score</th>
+                                <th>Status</th>
+                                <th>Status Score</th>
+                                <th>Due Date</th>
+                                <th>Due Date Score</th>
+                                <th>Total Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($results as $bugtrack)
+                                <tr>
+                                    <td>{{ $bugtrack['title'] }}</td>
+                                    <td>{{ ucfirst($bugtrack['severity']) }}</td>
+                                    <td>{{ $bugtrack['severity_score'] }}</td>
+                                    <td>{{ ucfirst($bugtrack['status']) }}</td>
+                                    <td>{{ $bugtrack['status_score'] }}</td>
+                                    <td>{{ $bugtrack['due_date'] }}</td>
+                                    <td>{{ $bugtrack['due_date_score'] }}</td>
+                                    <td>{{ $bugtrack['total_score'] }}</td>
+                                    <td>
+                                        <a href="{{ route('bugtrack.view', ['projectId' => $projectId, 'bugtrackId' => $bugtrack['id']]) }}" class="eye-icon">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
+            </div>
+        </div>
     </div>
 </div>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Button click event handler for sorting by suggested bug tracks
+        document.getElementById('sort-by-suggested').addEventListener('click', function () {
+            // Hide the right section for bugtrackings
+            document.getElementById('bugtrackings-section').classList.add('d-none');
+            
+            // Show the suggested bug tracks section
+            document.getElementById('suggested-bug-tracks').classList.remove('d-none');
+        });
+
+        // Show All button click event handler
+        document.getElementById('show-all').addEventListener('click', function () {
+            // Show the right section for bugtrackings
+            document.getElementById('bugtrackings-section').classList.remove('d-none');
+            
+            // Hide the suggested bug tracks section
+            document.getElementById('suggested-bug-tracks').classList.add('d-none');
+        });
+    });
+</script>
+
+
+
+
+</div>
+</div>
+
+@section('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const suggestedButton = document.getElementById('sort-by-suggested');
+        const openSection = document.querySelector('[data-status="open"]');
+        const inProgressSection = document.querySelector('[data-status="In Progress"]');
+        const closedSection = document.querySelector('[data-status="Closed"]');
+        const suggestedSection = document.querySelector('[data-status="Suggested"]');
+
+        // Hide all sections except "Suggested" initially
+        openSection.style.display = 'none';
+        inProgressSection.style.display = 'none';
+        closedSection.style.display = 'none';
+
+        // Show only "Suggested" when clicked
+        suggestedButton.addEventListener('click', function() {
+            openSection.style.display = 'none';
+            inProgressSection.style.display = 'none';
+            closedSection.style.display = 'none';
+            suggestedSection.style.display = 'block';
+        });
+
+        // Show all sections when clicked
+        document.getElementById('show-all').addEventListener('click', function() {
+            openSection.style.display = 'block';
+            inProgressSection.style.display = 'block';
+            closedSection.style.display = 'block';
+            suggestedSection.style.display = 'none';
+        });
+    });
+</script>
+
+@endsection
+
+
 
 <!-- Font Awesome CDN for icons -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
@@ -292,7 +459,27 @@
         }
     });
 </script>
+
 @endsection
+@section('page-script')
+    @parent
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        window.addEventListener('load', () => {
+            // Check for a success message in the session
+            const successMessage = "{{ session('success') }}";
+
+            if (successMessage) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: successMessage,
+                });
+            }
+        });
+    </script>
+@endsection
+
 
 <!-- Custom CSS -->
 <style>
@@ -328,6 +515,16 @@
         padding: 0.75rem 1.5rem;
         border-radius: 0.5rem;
     }
+    .button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Adjust the gap between buttons */
+}
+
+.btn-equal {
+    width: 100%; /* Ensures all buttons take up full width */
+}
+
 
     .btn-primary {
         background-color: #007bff;
@@ -395,4 +592,20 @@
         color: white;
         padding: 1rem;
     }
+
+    .bugtrack-card .label-container {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem; /* Adjust the font size */
+    margin-top: 5px; /* Add margin between labels */
+}
+
+.bugtrack-card .label-container i {
+    margin-right: 5px; /* Add some space between the icon and the text */
+}
+
+.bugtrack-card .label-container span {
+    margin-right: 10px; /* Add some space between labels */
+}
+
 </style>

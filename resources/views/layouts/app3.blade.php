@@ -160,25 +160,25 @@
         </div>
     </div>
 
-  <!-- Bug Distribution Chart -->
-<div class="col-lg-6">
+ <!-- Bug Distribution Chart -->
+ <div class="col-lg-6">
   <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5 class="mb-1">Bug Distribution</h5>
-      <!-- Dropdown Menu for Chart Type -->
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="chartTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-          Bug Status
-        </button>
-        <ul class="dropdown-menu" aria-labelledby="chartTypeDropdown">
-          <li><a class="dropdown-item active" href="#" data-chart-type="status">Bug Status</a></li>
-          <li><a class="dropdown-item" href="#" data-chart-type="severity">Bug Severity</a></li>
-        </ul>
+      <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-1">Bug Distribution</h5>
+          <!-- Dropdown Menu for Chart Type -->
+          <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="chartTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  Bug Status
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="chartTypeDropdown">
+                  <li><a class="dropdown-item active" href="#" data-chart-type="status">Bug Status</a></li>
+                  <li><a class="dropdown-item" href="#" data-chart-type="severity">Bug Severity</a></li>
+              </ul>
+          </div>
       </div>
-    </div>
-    <div class="card-body">
-      <div id="bugChart" style="height: 350px;"></div>
-    </div>
+      <div class="card-body">
+          <div id="bugChart" style="height: 350px;"></div>
+      </div>
   </div>
 </div>
 
@@ -192,47 +192,57 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    var chartOptions = {
-      chart: {
-        type: 'pie',
-        height: 350
-      },
-      series: @json($bugChartData['status']['series']),
-      labels: @json($bugChartData['status']['labels']),
-    };
-
-    var chart = new ApexCharts(document.querySelector("#bugChart"), chartOptions);
-    chart.render();
-
-    document.querySelectorAll('.dropdown-item').forEach(function (item) {
-      item.addEventListener('click', function (event) {
-        event.preventDefault();
-        var selectedType = this.getAttribute('data-chart-type');
-        updateChart(selectedType);
-        updateDropdownText(this.textContent);
-      });
-    });
-
-    function updateChart(type) {
-      var newOptions = {
-        series: type === 'status' ? @json($bugChartData['status']['series']) : @json($bugChartData['severity']['series']),
-        labels: type === 'status' ? @json($bugChartData['status']['labels']) : @json($bugChartData['severity']['labels']),
+      var chartOptions = {
+          chart: {
+              type: 'pie',
+              height: 350,
+              toolbar: {
+                  show: true,
+                  tools: {
+                      download: true,
+                      selection: true,
+                      zoom: true,
+                      zoomin: true,
+                      zoomout: true,
+                      pan: true,
+                      reset: true,
+                  },
+              },
+          },
+          series: @json($bugChartData['status']['series']),
+          labels: @json($bugChartData['status']['labels']),
       };
 
-      chart.updateOptions(newOptions);
-    }
+      var chart = new ApexCharts(document.querySelector("#bugChart"), chartOptions);
+      chart.render();
 
-    function updateDropdownText(text) {
-      var button = document.querySelector('#chartTypeDropdown');
-      button.textContent = text;
-    }
+      document.querySelectorAll('.dropdown-item').forEach(function (item) {
+          item.addEventListener('click', function (event) {
+              event.preventDefault();
+              var selectedType = this.getAttribute('data-chart-type');
+              updateChart(selectedType);
+              updateDropdownText(this.textContent);
+          });
+      });
 
-    // Initialize with default selection
-    updateDropdownText('Bug Status');
+      function updateChart(type) {
+          var newOptions = {
+              series: type === 'status' ? @json($bugChartData['status']['series']) : @json($bugChartData['severity']['series']),
+              labels: type === 'status' ? @json($bugChartData['status']['labels']) : @json($bugChartData['severity']['labels']),
+          };
+
+          chart.updateOptions(newOptions);
+      }
+
+      function updateDropdownText(text) {
+          var button = document.querySelector('#chartTypeDropdown');
+          button.textContent = text;
+      }
+
+      // Initialize with default selection
+      updateDropdownText('Bug Status');
   });
 </script>
-
-
 <div class="row gy-4">
   <!-- Project Progress Chart -->
   <div class="col-lg-12">

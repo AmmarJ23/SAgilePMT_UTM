@@ -41,7 +41,7 @@
                 </div>
             </div>
     
-            <div style="color: #333; font-size: 1.125rem; line-height: 1.6;">{{ $forumPost->content }}</div>
+            <div style="color: #333; font-size: 1.125rem; line-height: 1.6;">{!! $forumPost->content !!}</div>
     
             @if($forumPost->image_urls)
                 <div style="margin-top: 16px;">
@@ -59,7 +59,8 @@
                 <form method="POST" action="{{ route('comments.store', ['forum_id' => $forumPost->id]) }}">
                     @csrf
                     <div style="margin-bottom: 1rem;">
-                        <textarea name="content" style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; line-height: 1.5;" rows="3" placeholder="Type your comment here..." required></textarea>
+                        <div id="editor" style="height: 200px; background-color: white;"></div>
+                        <input type="hidden" name="content" id="content">
                         @error('content')
                             <p style="color: #e53e3e; font-size: 0.875rem; margin-top: 0.5rem;">{{ $message }}</p>
                         @enderror
@@ -71,20 +72,34 @@
             </div>
         </div>
     
-        <div id="commentSection">
+         <div id="commentSection">
             @foreach($forumPost->comments as $comment)
-                <div style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem;">
+                <div style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 1rem;" id="comment-{{ $comment->id }}">
                     <div style="padding: 1rem;">
-                        <div style="display: flex; align-items: center; margin-bottom: 0.5rem;">
-                            <div style="background-color: #3f58b0; padding: 0.5rem; border-radius: 50%; color: white;">
-                                <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <div style="display: flex; align-items: center;">
+                                <div style="background-color: #3f58b0; padding: 0.5rem; border-radius: 50%; color: white;">
+                                    <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                                </div>
+                                <div style="margin-left: 0.75rem;">
+                                    <span style="font-weight: 600;">{{ $comment->user->name }}</span>
+                                    <span style="color: #666; margin-left: 0.5rem;">{{ $comment->created_at->format('F d, Y h:i A') }}</span>
+                                </div>
                             </div>
-                            <div style="margin-left: 0.75rem;">
-                                <span style="font-weight: 600;">{{ $comment->user->name }}</span>
-                                <span style="color: #666; margin-left: 0.5rem;">{{ $comment->created_at->format('F d, Y h:i A') }}</span>
+                            <div>
+                                @if(auth()->user() && auth()->user()->id === $comment->user_id)
+                                    <button class="edit-comment-btn" data-comment-id="{{ $comment->id }}" style="margin-right: 10px; background: none; border: none; cursor: pointer; color: #3f58b0;">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="delete-comment-btn" data-comment-id="{{ $comment->id }}" style="background: none; border: none; cursor: pointer; color: #e53e3e;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                @endif
                             </div>
                         </div>
-                        <p style="color: #333; font-size: 1.125rem; line-height: 1.6;">{{ $comment->content }}</p>
+                        <div class="comment-content" id="comment-content-{{ $comment->id }}">
+                            {!! $comment->content !!}
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -94,6 +109,13 @@
 
 <!-- Font Awesome CDN for icons -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+
+<!-- Quillbot JS and CSS -->
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+<!-- Axios CDN -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 <!-- Include SweetAlert2 just before the closing </body> tag -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -105,16 +127,141 @@
                 icon: 'success',
                 title: 'Success!',
                 text: "{{ session('success') }}",
+                timer: 3000, // Auto close after 3 seconds
+                showConfirmButton: false // Hide the OK button
             });
         @endif
+
+        // Check for an error message in the session
+        @if(session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: "{{ session('error') }}",
+                timer: 3000, // Auto close after 3 seconds
+                showConfirmButton: false // Hide the OK button
+            });
+        @endif
+
+        var quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+
+        var form = document.querySelector('form');
+        form.onsubmit = function() {
+            var content = document.querySelector('input[name=content]');
+            content.value = quill.root.innerHTML;
+        };
+
+        // Event listeners for edit and delete buttons
+        document.querySelectorAll('.edit-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                editComment(commentId);
+            });
+        });
+
+        document.querySelectorAll('.delete-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                deleteComment(commentId);
+            });
+        });
+
+        document.querySelectorAll('.reply-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const commentId = this.getAttribute('data-comment-id');
+                replyToComment(commentId);
+            });
+        });
     });
-</script>
 
-<style>
-    /* Custom CSS styles */
-    .text-red-500 {
-        color: #e53e3e; /* Red color for error text */
+    function editComment(commentId) {
+        const content = document.getElementById(`comment-content-${commentId}`).innerHTML;
+        Swal.fire({
+            title: 'Edit Comment',
+            html: `<textarea id="edit-comment-textarea" class="swal2-textarea" style="display: block; width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 0.375rem;">${content}</textarea>`,
+            focusConfirm: false,
+            preConfirm: () => {
+                const editedContent = document.getElementById('edit-comment-textarea').value;
+                return { content: editedContent };
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const editedContent = result.value.content;
+                axios.post(`/comments/${commentId}/update`, {
+                    content: editedContent,
+                    _token: '{{ csrf_token() }}'
+                }).then(response => {
+                    if (response.data.success) {
+                        document.getElementById(`comment-content-${commentId}`).innerHTML = editedContent;
+                        Swal.fire('Success', response.data.message, 'success');
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
+                    }
+                }).catch(error => {
+                    Swal.fire('Error', 'An error occurred while updating the comment.', 'error');
+                });
+            }
+        });
     }
-</style>
 
+    function deleteComment(commentId) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                axios.post(`/comments/${commentId}/delete`, {
+                    _token: '{{ csrf_token() }}'
+                }).then(response => {
+                    if (response.data.success) {
+                        document.getElementById(`comment-${commentId}`).remove();
+                        Swal.fire('Deleted!', response.data.message, 'success');
+                    } else {
+                        Swal.fire('Error', response.data.message, 'error');
+                    }
+                }).catch(error => {
+                    Swal.fire('Error', 'An error occurred while deleting the comment.', 'error');
+                });
+            }
+        });
+    }
+
+    function replyToComment(commentId) {
+    Swal.fire({
+        title: 'Reply to Comment',
+        html: `<textarea id="reply-comment-textarea" class="swal2-textarea" style="display: block; width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 0.375rem;"></textarea>`,
+        focusConfirm: false,
+        preConfirm: () => {
+            const replyContent = document.getElementById('reply-comment-textarea').value;
+            return { content: replyContent };
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const replyContent = result.value.content;
+            axios.post(`/comments/${commentId}/reply`, {
+                content: replyContent,
+                _token: '{{ csrf_token() }}'
+            }).then(response => {
+                if (response.data.success) {
+                    Swal.fire('Success', response.data.message, 'success');
+                    // Optionally, you can update the UI to display the new reply
+                    // For example, refresh the comment section to show the new reply
+                    location.reload(); // This will reload the page to show the updated comments
+                } else {
+                    Swal.fire('Error', response.data.message, 'error');
+                }
+            }).catch(error => {
+                Swal.fire('Error', 'An error occurred while replying to the comment.', 'error');
+            });
+        }
+    });
+}
+</script>
 @endsection

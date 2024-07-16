@@ -13,6 +13,55 @@
     </div>
 </div>
 
+
+<!-- Bootstrap Modal for Calendar Event Details -->
+<div class="modal fade" id="calendarEventModal" tabindex="-1" aria-labelledby="calendarEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="calendarEventModalLabel">Calendar Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="calendarEventTitle"></span></p>
+                <p><strong>Start:</strong> <span id="calendarEventStart"></span></p>
+                <p><strong>End:</strong> <span id="calendarEventEnd"></span></p>
+                <p><strong>Type:</strong> <span id="calendarEventType"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="deleteCalendarEventBtn">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap Modal for Task Details -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taskModalLabel">Task Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Title:</strong> <span id="taskTitle"></span></p>
+                <p><strong>Description:</strong> <span id="taskDescription"></span></p>
+                <p><strong>Start:</strong> <span id="taskStart"></span></p>
+                <p><strong>End:</strong> <span id="taskEnd"></span></p>
+                <p><strong>Sprint:</strong> <span id="taskSprint"></span></p>
+                <p><strong>Project:</strong> <span id="taskProject"></span></p>
+                <p><strong>Type:</strong> <span id="taskType"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="goToTaskBtn">Go to Task</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 @endsection
 
 @section('page-script')
@@ -123,6 +172,18 @@
     .fc-event:hover {
         background-color: #0056b3;
     }
+
+     /* Green color for Task events */
+     .event-task {
+        background-color: #28a745 !important;
+        color: #fff; /* Text color for Task events */
+    }
+
+    /* Red color for past events */
+    .event-past {
+        background-color: #ff0000 !important;
+        color: #fff; /* Text color for past events */
+    }
 </style>
 
 <script>
@@ -162,19 +223,24 @@
             },
             eventClick: function(event) {
                 if (event.type === 'Task') {
-                    swal("Warning", "You cannot delete a Task event.", "warning");
-                    return false; // Prevent deletion
-                }
-
-                swal({
-                    title: "Are you sure?",
-                    text: "Once deleted, you will not be able to recover this event!",
-                    icon: "warning",
-                    buttons: true,
-                    dangerMode: true,
-                })
-                .then((willDelete) => {
-                    if (willDelete) {
+                    $('#taskModal').modal('show');
+                    $('#taskTitle').text(event.title);
+                    $('#taskDescription').text(event.description); // Assuming 'description' is available in your event object
+                    $('#taskStart').text(event.start.format('MMMM Do YYYY, h:mm a'));
+                    $('#taskEnd').text(event.end ? event.end.format('MMMM Do YYYY, h:mm a') : 'No End Date');
+                    $('#taskSprint').text(event.sprint); // Assuming 'sprint' is available in your event object
+                    $('#taskProject').text(event.project); // Assuming 'project' is available in your event object
+                    $('#taskType').text(event.type);
+                    $('#goToTaskBtn').off().click(function() {
+                        window.location.href = "/task/" + event.id + "/edit"; // Adjust the route as per your application
+                    });
+                } else {
+                    $('#calendarEventModal').modal('show');
+                    $('#calendarEventTitle').text(event.title);
+                    $('#calendarEventStart').text(event.start.format('MMMM Do YYYY, h:mm a'));
+                    $('#calendarEventEnd').text(event.end ? event.end.format('MMMM Do YYYY, h:mm a') : 'No End Date');
+                    $('#calendarEventType').text(event.type);
+                    $('#deleteCalendarEventBtn').off().click(function() {
                         $.ajax({
                             url: "{{ route('calendar.destroy', '') }}/" + event.id,
                             type: "DELETE",
@@ -182,6 +248,7 @@
                             data: { _token: "{{ csrf_token() }}" },
                             success: function(response) {
                                 $('#calendar').fullCalendar('removeEvents', event.id);
+                                $('#calendarEventModal').modal('hide'); // Close modal after successful delete
                                 swal("Success", "Event deleted successfully!", "success");
                             },
                             error: function(xhr, status, error) {
@@ -189,10 +256,8 @@
                                 swal("Error", "There was an error deleting the event.", "error");
                             },
                         });
-                    } else {
-                        swal("Your event is safe!");
-                    }
-                });
+                    });
+                }
             },
             selectAllow: function(event) {
                 return event.start.isSame(event.end, 'day');
@@ -200,10 +265,21 @@
             eventRender: function(event, element) {
                 var iconClass = 'fa fa-calendar';
                 element.find('.fc-content').prepend('<i class="' + iconClass + '"></i>');
+
+                // Check if event type is 'Task' and apply green background
+                if (event.type === 'Task') {
+                    element.addClass('event-task');
+                }
+
+                // Check if event end date is before today
+                if (event.end < moment()) {
+                    element.addClass('event-past');
+                }
             },
             weekMode: 'liquid', // Ensure the calendar shows only the current month's weeks
         });
     });
 </script>
+
 
 @endsection

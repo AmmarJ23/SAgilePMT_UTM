@@ -21,6 +21,7 @@ class ForumController extends Controller
         ->orderBy('created_at', 'desc')
         ->paginate(10);
 
+
     return view('forum.index', [
         'forumPosts' => $forumPosts,
         'selectedCategory' => $categoryFilter, // Pass the selected category to the view
@@ -39,6 +40,7 @@ public function view($projectId, $forumPostId)
         return redirect()->route('forum.index', ['projectId' => $projectId])->with('error', 'Forum post not found.');
     }
 
+    
     return view('forum.view', [
         'projectId' => $projectId,
         'forumPost' => $forumPost,

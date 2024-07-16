@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Task;
 use Illuminate\Support\Facades\Auth;
+use App\Sprint;
+use App\Project;
 
 class CalendarController extends Controller
 {
@@ -17,19 +19,30 @@ class CalendarController extends Controller
     
         // Fetch tasks from the Task model where user_names JSON contains the authenticated user's username
         $tasks = Task::whereJsonContains('user_names', [$user->username])
-                    ->get()
-                    ->map(function ($task) {
-                        return [
-                            'id' => $task->id,
-                            'title' => $task->title,
-                            'start' => $task->start_date,
-                            'end' => $task->end_date,
-                            'color' => '#808080',
-                            'editable' => false,
-                            'iconClass' => 'fas fa-tasks', // Default icon class for tasks
-                            'type' => 'Task', // Type of event
-                        ];
-                    });
+        ->get()
+        ->map(function ($task) {
+            // Fetch sprint details
+            $sprint = Sprint::find($task->sprint_id);
+            $sprintName = $sprint ? $sprint->sprint_name : 'N/A'; // Handle if sprint not found
+    
+          
+            // Fetch project details
+            $project = Project::find($task->proj_id);
+            $projectName = $project ? $project->proj_name : 'N/A'; // Handle if project not found
+            return [
+                'id' => $task->id,
+                'title' => $task->title,
+                'start' => $task->start_date,
+                'end' => $task->end_date,
+                'color' => '#808080',
+                'editable' => false,
+                'iconClass' => 'fas fa-tasks', // Default icon class for tasks
+                'type' => 'Task', // Type of event
+                'sprint' => $sprintName,
+                'project' => $projectName,
+                'description' => $task->description,
+            ];
+        });
     
                     
                     // dd( $tasks);
@@ -37,7 +50,7 @@ class CalendarController extends Controller
         $events = Calendar::all()->map(function ($event) {
             $color = null;
             $iconClass = null;
-            $type = null;
+            $type = 'Calendar Event';
             if ($event->title == 'Test') {
                 $color = '#924ACE';
                 $iconClass = 'fas fa-briefcase';

@@ -400,4 +400,14 @@ Route::get('/auth/forgot-password', [ForgotPasswordController::class, 'index'])-
 
 
 
-Route::get('/bugtrack/testing/yestesting', 'BugtrackingController@calculateBugScore');
+Route::get('/bugtrack/calculate-scores', 'BugtrackingController@calculateAllBugScores')->name('bugtrack.calculate');
+Route::post('/update-score/{projectId}', 'BugtrackingController@updateScore')->name('bugtrack.updateScore');
+Route::get('/bugtrack/createScore/{projectId}', 'BugtrackingController@createScore')->name('bugtrack.createScore');
+Route::post('/comments/{comment_id}/update', 'CommentController@update')->name('comments.update');
+Route::post('/comments/{comment_id}/delete', 'CommentController@delete')->name('comments.delete');
+Route::post('/comments/{comment_id}/reply', 'CommentController@replyToComment')->name('comments.reply');
+
+
+
+
+
