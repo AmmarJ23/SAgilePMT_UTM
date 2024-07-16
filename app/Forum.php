@@ -9,7 +9,7 @@ class Forum extends Model
     protected $table = 'forums';
 
     protected $fillable = [
-        'title', 'content', 'category', 'image_urls', 'user_id','project_id',
+        'title', 'content', 'category', 'image_urls', 'user_id','project_id', 'assigned_users',
     ];
     
     

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Comment;
 use App\Forum;
 use Illuminate\Support\Facades\Auth; // Import the Auth facade
+use App\Reply;
 
 class CommentController extends Controller
 {
@@ -30,22 +31,23 @@ class CommentController extends Controller
         return back()->with('success', 'Comment added successfully!');
     }
     
-    public function replyToComment(Request $request, $comment_id, $forum_id)
-{
-    $validatedData = $request->validate([
-        'content' => 'required|string',
-    ]);
-
-    $comment = Comment::findOrFail($comment_id);
-    $reply = new Comment();
-    $reply->content = $validatedData['content'];
-    $reply->user_id = auth()->id(); // Assuming you're using authentication
-    $reply->parent_id = $comment->id;
-    $reply->parent_id =  $forum_id;// Set the parent_id to the original comment's ID
-    $reply->save();
-
-    return redirect()->back()->with('success', 'Reply posted successfully.');
-}
+    public function storeReply(Request $request, $commentId)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
+    
+        $comment = Comment::findOrFail($commentId);
+    
+        $reply = new Reply();
+        $reply->user_id = auth()->id();
+        $reply->comment_id = $comment->id;
+        $reply->content = $request->input('content');
+        $reply->save();
+    
+        return redirect()->back()->with('success', 'Reply posted successfully.');
+    }
+    
 
 public function update(Request $request, $commentId)
 {

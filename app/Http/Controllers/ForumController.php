@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Forum;
 use Illuminate\Support\Facades\Auth;
+use App\User;
 
 
 class ForumController extends Controller
@@ -40,7 +41,6 @@ public function view($projectId, $forumPostId)
         return redirect()->route('forum.index', ['projectId' => $projectId])->with('error', 'Forum post not found.');
     }
 
-    
     return view('forum.view', [
         'projectId' => $projectId,
         'forumPost' => $forumPost,
@@ -50,9 +50,14 @@ public function view($projectId, $forumPostId)
     
 public function create($projectId = null)
 {
-    return view('forum.create', ['projectId' => $projectId]);
-}
+    // Fetch all users
+    $users = User::pluck('name', 'id'); // Assuming 'name' is the column containing user names
 
+    return view('forum.create', [
+        'users' => $users,
+        'projectId' => $projectId
+    ]);
+}
 
 public function store(Request $request, $projectId)
 {
@@ -61,7 +66,8 @@ public function store(Request $request, $projectId)
         'title' => 'required|string|max:255',
         'content' => 'required|string',
         'category' => 'required|string', // Assuming you have a category field
-        'image_urls' => 'nullable|string', // Validate image URL as a valid URL
+        'image_urls' => 'nullable|string', 
+        // Validate image URL as a valid URL
         // Add any other validation rules you need
     ]);
 

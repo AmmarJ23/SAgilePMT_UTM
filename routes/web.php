@@ -405,7 +405,7 @@ Route::post('/update-score/{projectId}', 'BugtrackingController@updateScore')->n
 Route::get('/bugtrack/createScore/{projectId}', 'BugtrackingController@createScore')->name('bugtrack.createScore');
 Route::post('/comments/{comment_id}/update', 'CommentController@update')->name('comments.update');
 Route::post('/comments/{comment_id}/delete', 'CommentController@delete')->name('comments.delete');
-Route::post('/comments/{comment_id}/reply', 'CommentController@replyToComment')->name('comments.reply');
+Route::post('/comments/{id}/reply', 'CommentController@storeReply')->name('comments.reply');
 Route::post('/calendar/status-update', 'CalendarController@statusUpdate')->name('calendar.statusUpdate');
 
 

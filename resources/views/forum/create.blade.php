@@ -42,6 +42,17 @@
             @enderror
         </div>
         <div class="form-group mb-4">
+            <label>Assign Users</label><br>
+            @foreach($users as $id => $name)
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" name="user_ids[]" id="user_{{ $id }}" value="{{ $id }}">
+                    <label class="form-check-label" for="user_{{ $id }}">
+                        {{ $name }}
+                    </label>
+                </div>
+            @endforeach
+        </div>
+        <div class="form-group mb-4">
             <label for="image_urls" class="form-label">Image URL</label>
             <input type="text" id="image_urls" name="image_urls" class="form-control @error('image_urls') is-invalid @enderror" placeholder="Enter the image URL (optional)">
             @error('image_urls')
